@@ -1,3 +1,6 @@
 [submodule "DeluxeMakefile"]
 	path = DeluxeMakefile
 	url = https://gist.github.com/ce267187fff0c658c0b4b06b997e5376.git
+[submodule "StoryTime"]
+	path = StoryTime
+	url = https://gist.github.com/c3bb0a37b3a39ddf5d02403eb1641d50.git
