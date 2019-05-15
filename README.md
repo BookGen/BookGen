@@ -102,14 +102,21 @@ There are a few added features you can take advantage of in your Markdown for sp
 + A Div with a class of `chapterprecis` can be used at the beginning of a chapter to insert a chapter precis:
 
 		# My Chapter
-		:::{.chapterprecis}
+
+		::: chapterprecis :::
 		| A very good chapter,
 		| Yes, very good indeed.
-		:::
+		:::::::::::::::::::::
 
-+ A HorizontalRule with a class of `plain` represents a plain ( unfancy ) break:
++ A Span with a class of `lettrine` can be used for leading text:
 
-		___{.plain}
+		[This is the beginning]{.lettrine} of a section of text.
+
++ An empty Span with a class of `at` can be used to generate a `\@` for sentence­‑spacing adjustment in LaTeX. This is only necessary if you are generating PDFs with a style which does not use `\frenchspacing`.
+
+		Reading Rainbow, Mr[]{.at}. Rogers, etc.[]{.at} are all fond memories for me.
+
++ A raw HTML block of the form `<hr class="plain"/>` represents a plain ( unfancy ) break.
 
 ### YAML metadata
 

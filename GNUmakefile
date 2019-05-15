@@ -218,12 +218,12 @@ endif
 
 $(eval $(call unstyledtargets,LaTeX,tex,$(INDEX)))
 
-$(call unstyledeverything,LaTeX,tex): LaTeX/%.tex: $$(call srcs,$$*) $(YAML) $(srcdir)/template.tex
+$(call unstyledeverything,LaTeX,tex): LaTeX/%.tex: $$(call srcs,$$*) $(YAML) $(srcdir)/pandoc-latex.py $(srcdir)/template.tex
 	$(makefolders)
 	(echo "---"; cat $(YAML); $(fileyaml); echo "..."; cat $<) | pandoc -f markdown-smart -t latex-smart --standalone --template $(srcdir)/template.tex --filter $(srcdir)/pandoc-latex.py -o $@ --top-level-division=chapter $(if $(BIBLIOGRAPHY),--biblatex,)
 	@echo "LaTeX file for $< generated at $@"
 
-LaTeX/$(INDEX).tex: $$(call unstyledeverything,LaTeX,tex) $(YAML)
+LaTeX/$(INDEX).tex: $$(call unstyledeverything,LaTeX,tex) $(YAML) $(srcdir)/pandoc-latex.py
 	$(makefolders)
 	(echo "---"; cat $(YAML); echo "name: $(INDEX)"; echo "type: index"; echo "...") | pandoc -f markdown-smart -t latex-smart --standalone --template $(srcdir)/template.tex --filter $(srcdir)/pandoc-latex.py -o $@ --top-level-division=chapter $(if $(BIBLIOGRAPHY),--biblatex,)
 	(echo "\\\\frontmatter"; $(foreach standalone,$(allstandalonenames),echo "\\\\include{$(standalone)}";) echo "\\\\tableofcontents"; echo; echo "\\\\mainmatter"; echo "\\\\openany \\\\cleardoublepage"; echo; $(foreach chapter,$(allchapternames),echo "\\\\include{$(CHAPTERPREFIX)$(chapter)}";) echo; echo "\\\\appendix"; $(foreach appendix,$(allappendixnames),echo "\\\\include{$(APPENDIXPREFIX)$(appendix)}";) echo; echo "\\\\backmatter") >> $@
@@ -233,7 +233,7 @@ LaTeX/$(INDEX).tex: $$(call unstyledeverything,LaTeX,tex) $(YAML)
 
 $(eval $(call targets,HTML,css,xhtml,$(INDEX) $(basename $(BIBLIOGRAPHY))))
 
-$(call alleverything,HTML,css,xhtml): $$(call srcs,$$(call filenames,HTML,$$(call styles,$$@),xhtml,$$@)) $(YAML) $(srcdir)/template.xhtml Styles/$$(call styles,$$@).css
+$(call alleverything,HTML,css,xhtml): $$(call srcs,$$(call filenames,HTML,$$(call styles,$$@),xhtml,$$@)) $(YAML) $(srcdir)/pandoc-html.py $(srcdir)/template.xhtml Styles/$$(call styles,$$@).css
 	$(makefolders)
 	(echo "---"; echo "suppress-bibliography: true"; $(if $(BIBLIOGRAPHY),echo "bibliography: $(addsuffix .bib,$(basename $(BIBLIOGRAPHY)))"; echo "citation-style: $(srcdir)/chicago-note-bibliography-16th-edition.csl";,) echo "styles:"; echo "- name: $(call styles,$@)"; echo "  css: |"; echo '    ```{=html}'; cat Styles/$(call styles,$@).css | sed 's/^/    /'; echo '    ```'; $(if $(ALLSTYLES),$(foreach style,$(filter-out $(call styles,$@),$(stylenames)),echo "- name: $(style)"; echo "  css: |"; echo '    ```{=html}'; cat Styles/$(style).css | sed 's/^/    /'; echo '    ```';)) cat $(YAML); $(fileyaml); echo "..."; cat $<) | pandoc -f markdown-smart -t html5-smart --standalone --template $(srcdir)/template.xhtml --filter $(srcdir)/pandoc-html.py $(if $(BIBLIOGRAPHY),--filter pandoc-citeproc,) -o $@ --self-contained --section-divs --mathml
 	@echo "$(call styles,$@) HTML file for $< generated at $@"

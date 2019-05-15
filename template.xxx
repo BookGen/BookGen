@@ -51,7 +51,7 @@ $endfor$
 \vfill
 \noindent\tiny \copyrightinfo\par
 \medskip
-\noindent\editioninfo{} Edition, \draftinfo.\par
+\noindent\editioninfo{} Edition, \draftinfo{}.\par
 \vfill
 \vfill
 \noindent\detailsinfo
