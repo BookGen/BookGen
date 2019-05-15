@@ -79,7 +79,7 @@ Or, if you already have this repository cloned, but forgot to set up the submodu
 
 	git submodule update --init
 
-( Alternatively, if you donʼt want to use `git`, download [`DeluxeMakefile/Makefile.sty`](https://gist.githubusercontent.com/marrus-sh/ce267187fff0c658c0b4b06b997e5376/raw/235e4ed3d69241aa20ee2535a2c2f36c02f794d4/Makefile.sty) and [`Storytime/index.html`](https://gist.githubusercontent.com/marrus-sh/c3bb0a37b3a39ddf5d02403eb1641d50/raw/1f20ccc3a0c99831dc3a6102c6b87a63ae1a1deb/index.html) and place them in their respective positions in this folder. )
+( Alternatively, if you donʼt want to use `git`, download [`DeluxeMakefile/Makefile.sty`](https://gist.githubusercontent.com/marrus-sh/ce267187fff0c658c0b4b06b997e5376/raw/235e4ed3d69241aa20ee2535a2c2f36c02f794d4/Makefile.sty) and [`StoryTime/index.html`](https://gist.githubusercontent.com/marrus-sh/c3bb0a37b3a39ddf5d02403eb1641d50/raw/1f20ccc3a0c99831dc3a6102c6b87a63ae1a1deb/index.html) and place them in their respective positions in this folder. )
 
 ## File Structure
 
