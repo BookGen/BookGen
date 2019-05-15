@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml" xmlns:epub="http://www.idpf.org/2007/ops" $if(lang)$ lang="$lang$" xml:lang="$lang$"$endif$$if(type)$ data--book-gen-type="$type$"$endif$$if(dir)$ dir="$dir$"$endif$>
 <head>
-	<title>$if(title)$$title$$endif$$if(name)$ $name$$endif$</title>
+	<title>$if(series)$$series$ – $endif$$if(title)$$title$$endif$$if(name)$ $name$$endif$</title>
 	<meta charset="utf-8"/>
 	<meta name="generator" content="pandoc"/>
 $if(author)$
@@ -9,6 +9,9 @@ $if(author)$
 $endif$
 $if(keywords)$
 	<meta name="keywords" content="$for(keywords)$$keywords$$sep$, $endfor$"/>
+$endif$
+$if(description)$
+	<meta name="description" content="$description$"/>
 $endif$
 $for(header-includes)$
 $header-includes$
@@ -21,7 +24,7 @@ $endfor$
 </head>
 <body>
 	<article>
-		<header>$if(title)$$title$$endif$$if(chapter)$ $chapter$$endif$</header>
+		<header>$if(series)$$series$ – $endif$$if(title)$$title$$endif$$if(chapter)$ $chapter$$endif$</header>
 $for(include-before)$
 
 		<!-- BEGIN BEFORE -->

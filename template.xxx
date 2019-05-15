@@ -4,8 +4,14 @@
 $if(title)$
 \renewcommand{\titleinfo}{$title$}
 $endif$
+$if(series)$
+\renewcommand{\seriesinfo}{$series$}
+$endif$
 $if(author)$
 \renewcommand{\authorinfo}{$author$}
+$endif$
+$if(description)$
+\renewcommand{\descriptioninfo}{$description$}
 $endif$
 $if(year)$
 \renewcommand{\yearinfo}{$year$}
@@ -41,15 +47,16 @@ $endfor$
 \date{\yearinfo}
 \maketitle
 \thispagestyle{empty}
-\clearpage\null
+\providecommand{\makecopyright}{\clearpage\null
 \vfill
 \noindent\tiny \copyrightinfo\par
 \medskip
-\noindent\editioninfo, draft \draftinfo.\par
+\noindent\editioninfo{} Edition, \draftinfo.\par
 \vfill
 \vfill
 \noindent\detailsinfo
-\vfill
+\vfill\clearpage}
+\makecopyright
 \end{titlingpage}
 
 $body$

@@ -99,8 +99,10 @@ This beïng a Makefile, **you should not use colons, semicolons, or spaces in fi
 
 The metadata provided in `info.yml` can customize the compiled result. The available parameters are :
 
-+ `title` : The title of the work
-+ `author` : The author of the work
++ `title` : The title of the work ( plaintext only )
++ `series` : The series that the work belongs to ( plaintext only )
++ `author` : The author of the work ( plaintext only )
++ `description` : A description of the work ( plaintext only )
 + `year` : The copyright year( s ) of the work
 + `rights` : The ( short ) rights or license statement associated with the work
 + `details` : Detailed information regarding the licensing or publication of the work ; this can contain paragraph content
@@ -110,6 +112,8 @@ The metadata provided in `info.yml` can customize the compiled result. The ava
 + `header-includes` : Content to include in the header of every document ; you should only use this to insert raw HTML headers ( LaTeX header information should be specified in your style file )
 + `include-before` : Content to include at the beginning of every text
 + `include-after` : Content to include at the ending of every text
+
+You can also provide this metadata on a per­‑text basis for additional customization.
 
 ### Bibliography
 

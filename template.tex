@@ -9,8 +9,14 @@ $endif$
 $if(title)$
 \renewcommand{\titleinfo}{$title$}
 $endif$
+$if(series)$
+\renewcommand{\seriesinfo}{$series$}
+$endif$
 $if(author)$
 \renewcommand{\authorinfo}{$author$}
+$endif$
+$if(description)$
+\renewcommand{\descriptioninfo}{$description$}
 $endif$
 $if(year)$
 \renewcommand{\yearinfo}{$year$}
