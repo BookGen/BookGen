@@ -40,7 +40,7 @@ dist: zip;
 clean: ; rm -rf $(BUILDDIR)
 unclean: ; rm -rf $(if $(DRAFTS),Markdown,) LaTeX HTML PDF PNG ZIP
 clobber distclean gone: clean unclean;
-zip: ; # Prerequisites will be added later
+zip: ;
 .PHONY: all everything htm html html5 xht xhtml5 xml latex markdown dist clean unclean clobber distclean gone;
 .SUFFIXES: ;
 .SECONDEXPANSION: ;
@@ -231,7 +231,7 @@ LaTeX/$(INDEX).tex: $$(call unstyledeverything,LaTeX,tex) $(YAML)
 
 # HTML #
 
-$(eval $(call targets,HTML,css,xhtml,$(INDEX) $(if $(BIBLIOGRAPHY),bibliography,)))
+$(eval $(call targets,HTML,css,xhtml,$(INDEX) $(basename $(BIBLIOGRAPHY))))
 
 $(call alleverything,HTML,css,xhtml): $$(call srcs,$$(call filenames,HTML,$$(call styles,$$@),xhtml,$$@)) $(YAML) $(srcdir)/template.xhtml Styles/$$(call styles,$$@).css
 	$(makefolders)
