@@ -53,7 +53,6 @@ In addition to GNU Make, you will need to make sure you have the following insta
 			+ `mfirstuc`
 			+ `biblatex`, including `biber` ( for works with bibliographies )
 				+ `biblatex-chicago` is used by default, but you can change this with a `BIBREQUIRE` override
-			+ `glossaries` ( for works with glossaries )
 			+ ( …and all of their prerequisites )
 			+ You will likely only need to install these yourself if you purposefully installed a limited TeX distribution like BasicTeX
 + **For PNG generation :**
