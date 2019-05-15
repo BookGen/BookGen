@@ -4,7 +4,7 @@ BookGen is a makefile which can be used to generate a wide variety of formats fr
 
 In order to use BookGen, you will need to make or acquire `.css` and/or `.cls` styles, which will be used to format your work. Basic LaTeX knowledge will help in debugging PDF generation and ensuring good output, but is ( hopefully ) not required.
 
-BookGen uses Pandoc under­‑the­‑hood ; click the following link to read about [Pandocʼs approach to markdown](https://pandoc.org/MANUAL.html#pandocs-markdown). In contrast with normal Pandoc, BookGen does *not* perform automatic quote‑ or dash‑substitutions ; it is expected that you write what you mean in your Markdown source.
+BookGen uses Pandoc under­‑the­‑hood ; click to read about [Pandocʼs approach to markdown](https://pandoc.org/MANUAL.html#pandocs-markdown). In contrast with normal Pandoc, BookGen does *not* perform automatic quote‑ or dash‑substitutions ; it is expected that you write what you mean in your Markdown source.
 
 BookGen runs on the command­‑line ; consequently, basic understanding of how to use a terminal emulator is advised.
 
@@ -122,7 +122,7 @@ The [Wikibooks page on LaTeX bibliography management](https://en.wikibooks.org/w
 
 ## Usage
 
-	make [ ⟨ make-options ⟩ ] [ ⟨ args ⟩ ] [⟨ options ⟩ ] [ ⟨ overrides ⟩ ]
+	make [ ⟨ make-options ⟩ ] [ ⟨ args ⟩ ] [ ⟨ options ⟩ ] [ ⟨ overrides ⟩ ]
 
 If you are calling `make` from your work directory, you will want to specify the `-f` option with the path to `GNUmakefile`. Conversely, if you are calling `make` from this directory, you will need the `-C` option to specify the work directory in which to operate.
 

@@ -32,7 +32,7 @@ YAML := info.yml
 
 # BASIC RULES #
 
-all everything: xhtml tex pdf png;
+all everything: md xhtml tex pdf png;
 htm html html5 xht xhtml5 xml: xhtml;
 latex: tex;
 markdown: md;
