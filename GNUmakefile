@@ -41,7 +41,7 @@ clean: ; rm -rf $(BUILDDIR)
 unclean: ; rm -rf $(if $(DRAFTS),Markdown,) LaTeX HTML PDF PNG ZIP
 clobber distclean gone: clean unclean;
 zip: ;
-.PHONY: all everything htm html html5 xht xhtml5 xml latex markdown dist clean unclean clobber distclean gone;
+.PHONY: all everything htm html html5 xht xhtml5 xml latex markdown dist clean unclean clobber distclean gone zip;
 .SUFFIXES: ;
 .SECONDEXPANSION: ;
 
