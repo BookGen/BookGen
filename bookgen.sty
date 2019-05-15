@@ -1,0 +1,67 @@
+\ProvidesPackage{bookgen}
+
+% Package includes %
+\RequirePackage[usenames,dvipsnames,svgnames,table]{xcolor}
+\RequirePackage[pages=some]{background}
+\RequirePackage{mfirstuc,newunicodechar,quoting}
+\RequirePackage[normalem]{ulem}
+\RequirePackage[hyphens]{url}
+\RequirePackage[breaklinks]{hyperref}
+
+% Unicode character substitutions %
+\newunicodechar{​}{\linebreak[0]}
+\newunicodechar{­}{\-}
+\newunicodechar{ }{~}
+\newunicodechar{ }{\thinspace}
+\newunicodechar{ }{\enspace}
+\newunicodechar{ }{\quad}
+
+% Draft mark %
+\newcommand{\draftmark}{\backgroundsetup{
+    contents={\Huge DRAFT},
+    color={red},
+    angle={-18},
+    opacity={.65},
+    scale={1},
+    position={12pc,-4pc},
+    nodeanchor={north west}
+}\BgThispage}
+\newcommand{\pagedraftmark}{}
+\newcommand{\potentialdraftmark}{}
+\newcommand{\DraftOn}{\renewcommand{\pagedraftmark}{{\bfseries\color{red!70!white} DRAFT}}\renewcommand{\potentialdraftmark}{{\draftmark}}}
+\newcommand{\DraftOff}{\renewcommand{\pagedraftmark}{}\renewcommand{\potentialdraftmark}{}}
+\makeevenhead{simple}{\thepage}{}{\pagedraftmark}
+\makeoddhead{simple}{\pagedraftmark}{}{\thepage}
+\DraftOn
+
+% Metadata setup %
+\newcommand{\titleinfo}{A Work}
+\newcommand{\authorinfo}{Anonymous}
+\newcommand{\yearinfo}{\the\year}
+\newcommand{\rightsinfo}{All rights reserved.}
+\newcommand{\editioninfo}{Standard Edition}
+\newcommand{\draftinfo}{\today}
+\newcommand{\detailsinfo}{}
+\newcommand{\copyrightinfo}{©~\yearinfo{} \authorinfo{}. \rightsinfo{}}
+\newcommand{\bookgentype}{standalone}
+
+%%  Underline setup:  %%
+\setlength{\ULdepth}{.5ex}
+
+% Link setup %
+\mathchardef\UrlBreakPenalty=0
+\mathchardef\UrlBigBreakPenalty=0
+\renewcommand{\UrlFont}{}
+\newcommand{\link}[2]{\dashuline{\href{#1}{#2}}}
+
+% Hyperlink setup %
+\hypersetup{
+	pdfinfo={
+		Title={\titleinfo},
+		Author={\authorinfo},
+		Creator={XeLaTeX}
+	},
+	pdfpagemode=UseNone,
+	pdfdisplaydoctitle=true,
+	pdfpagelayout=TwoPageRight
+}

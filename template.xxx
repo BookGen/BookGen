@@ -1,0 +1,59 @@
+% This is a LaTeX file which provides document metadata, opens the document, and prints the title page.
+
+% Metadata setup %
+$if(title)$
+\renewcommand{\titleinfo}{$title$}
+$endif$
+$if(author)$
+\renewcommand{\authorinfo}{$author$}
+$endif$
+$if(year)$
+\renewcommand{\yearinfo}{$year$}
+$endif$
+$if(rights)$
+\renewcommand{\rightsinfo}{$rights$}
+$endif$
+$if(style)$
+\renewcommand{\editioninfo}{\capitalisewords{$style$}}
+$endif$
+$if(draft)$
+\renewcommand{\draftinfo}{$draft$}
+$endif$
+$if(details)$
+\renewcommand{\detailsinfo}{$details$}
+$endif$
+
+$for(header-includes)$
+$header-includes$
+$endfor$
+
+\begin{document}
+
+% Titling page %
+$for(include-before)$
+$include-before$
+$endfor$
+
+\begin{titlingpage}
+\potentialdraftmark
+\title{\titleinfo}
+\author{\authorinfo}
+\date{\yearinfo}
+\maketitle
+\thispagestyle{empty}
+\clearpage\null
+\vfill
+\noindent\tiny \copyrightinfo\par
+\medskip
+\noindent\editioninfo, draft \draftinfo.\par
+\vfill
+\vfill
+\noindent\detailsinfo
+\vfill
+\end{titlingpage}
+
+$body$
+
+$for(include-after)$
+$include-after$
+$endfor$
