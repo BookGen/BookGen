@@ -2,7 +2,7 @@
 
 BookGen is a makefile which can be used to generate a wide variety of formats from a per­‑chapter Markdown source. It is designed to ease the technical aspects of publishing electronic documents so that authors can focus on simply writing.
 
-In order to use BookGen, you will need to make or acquire `.css` and/or `.cls` styles, which will be used to format your work. Basic LaTeX knowledge will help in debugging PDF generation and ensuring good output, but is ( hopefully ) not required.
+In order to use BookGen, you will need to make or acquire `.css` and/or `.cls` styles, which will be used to format your work. Some basic styles to get you started can be found here : <https://gist.github.com/marrus-sh/77be7f563f1b7fa412113d5090190a07>. Basic LaTeX knowledge will help in debugging PDF generation and ensuring good output, but is ( hopefully ) not required.
 
 BookGen uses Pandoc under­‑the­‑hood ; click to read about [Pandocʼs approach to markdown](https://pandoc.org/MANUAL.html#pandocs-markdown). In contrast with normal Pandoc, BookGen does *not* perform automatic quote‑ or dash‑substitutions ; it is expected that you write what you mean in your Markdown source.
 
@@ -104,7 +104,7 @@ The metadata provided in `info.yml` can customize the compiled result. The ava
 + `year` : The copyright year( s ) of the work
 + `rights` : The ( short ) rights or license statement associated with the work
 + `details` : Detailed information regarding the licensing or publication of the work ; this can contain paragraph content
-+ `draft` : A short string indicating the current draft of the work
++ `draft` : A short string indicating the current draft of the work ; this will be set automatically for individual texts ( but not the work as a whole ) if you have `DRAFTS` enabled
 + `lang` : The language of the work ( for HTML )
 + `final` : Use this to declare that your work is finished and remove the **DRAFT** markings.
 + `header-includes` : Content to include in the header of every document ; you should only use this to insert raw HTML headers ( LaTeX header information should be specified in your style file )
