@@ -95,6 +95,22 @@ There are three types of source text you can create :
 
 This beïng a Makefile, **you should not use colons, semicolons, or spaces in filenames**. You also should not create source files at `Markdown/Chapter/index.md` or `Markdown/text.md` without adjusting the `INDEX` or `FULLTEXT` overrides, respectively. Finally, style names which are the same as an existing argument defined by this makefile ( `html.css`, `latex.cls`, etc ) are not supported, as they would otherwise make compiling by style ambiguous.
 
+### Markdown extensions
+
+There are a few added features you can take advantage of in your Markdown for special formatting and display :
+
++ A Div with a class of `chapterprecis` can be used at the beginning of a chapter to insert a chapter precis:
+
+		# My Chapter
+		:::{.chapterprecis}
+		| A very good chapter,
+		| Yes, very good indeed.
+		:::
+
++ A HorizontalRule with a class of `plain` represents a plain ( unfancy ) break:
+
+		___{.plain}
+
 ### YAML metadata
 
 The metadata provided in `info.yml` can customize the compiled result. The available parameters are :

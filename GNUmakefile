@@ -226,7 +226,7 @@ $(call unstyledeverything,LaTeX,tex): LaTeX/%.tex: $$(call srcs,$$*) $(YAML) $(s
 LaTeX/$(INDEX).tex: $$(call unstyledeverything,LaTeX,tex) $(YAML)
 	$(makefolders)
 	(echo "---"; cat $(YAML); echo "name: $(INDEX)"; echo "type: index"; echo "...") | pandoc -f markdown-smart -t latex-smart --standalone --template $(srcdir)/template.tex --filter $(srcdir)/pandoc-latex.py -o $@ --top-level-division=chapter $(if $(BIBLIOGRAPHY),--biblatex,)
-	(echo "\\\\frontmatter"; $(foreach standalone,$(allstandalonenames),echo "\\\\include{$(standalone)}";) echo; echo "\\\\mainmatter"; echo "\\\\openany \\\\cleardoublepage"; echo; $(foreach chapter,$(allchapternames),echo "\\\\include{$(CHAPTERPREFIX)$(chapter)}";) echo; echo "\\\\appendix"; $(foreach appendix,$(allappendixnames),echo "\\\\include{$(APPENDIXPREFIX)$(appendix)}";) echo; echo "\\\\backmatter") >> $@
+	(echo "\\\\frontmatter"; $(foreach standalone,$(allstandalonenames),echo "\\\\include{$(standalone)}";) echo "\\\\tableofcontents"; echo; echo "\\\\mainmatter"; echo "\\\\openany \\\\cleardoublepage"; echo; $(foreach chapter,$(allchapternames),echo "\\\\include{$(CHAPTERPREFIX)$(chapter)}";) echo; echo "\\\\appendix"; $(foreach appendix,$(allappendixnames),echo "\\\\include{$(APPENDIXPREFIX)$(appendix)}";) echo; echo "\\\\backmatter") >> $@
 	@echo "LaTeX index generated at $@"
 
 # HTML #

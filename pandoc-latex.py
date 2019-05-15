@@ -33,6 +33,8 @@ def action(elem, doc):
 		elif re.match(r'^<hr */?>$', elem.text):
 			return RawBlock('\\pfbreak{}', format='latex')
 	elif isinstance(elem, HorizontalRule):
+		if 'plain' in elem.classes:
+			return RawBlock('\plainbreak{1}', format='latex')
 		return RawBlock('\\pfbreak{}', format='latex')
 	elif isinstance(elem, Link):
 		return [
@@ -46,6 +48,13 @@ def action(elem, doc):
 			Div(*elem.content),
 			RawBlock('\\end{quoting}', format='latex')
 		]
+	elif isinstance(elem, Div):
+		if 'chapterprecis' in elem.classes:
+			return [
+				RawBlock('\\chapterprecishere{', format='latex'),
+				Div(*elem.content),
+				RawBlock('}', format='latex')
+			]
 
 def main(doc=None):
 	return run_filter(action, doc=doc)
