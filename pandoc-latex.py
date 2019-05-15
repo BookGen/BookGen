@@ -9,7 +9,7 @@ import re
 
 def action(elem, doc):
 	if isinstance(elem, RawInline) and elem.format=='html':
-		if elem.text.startswith('<meta') or elem.text.startswith('<link'):
+		if elem.text.startswith('<link'):
 			return []
 		elif elem.text=='<b>':
 			return RawInline('\\textbf{', format='latex')
@@ -28,7 +28,7 @@ def action(elem, doc):
 		elif elem.text=='</dfn>':
 			return RawInline('}}', format='latex')
 	elif isinstance(elem, RawBlock):
-		if elem.text.startswith("<script") or elem.text.startswith("<style"):
+		if elem.text.startswith('<meta') or elem.text.startswith("<script") or elem.text.startswith("<style"):
 			return []
 		elif re.match(r'^<hr */?>$', elem.text):
 			return RawBlock('\\pfbreak{}', format='latex')

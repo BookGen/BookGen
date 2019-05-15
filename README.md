@@ -175,13 +175,13 @@ An `index.html` file will be placed in the folder containing the PNGs, which you
 
 Arguments : `dist`, `zip`
 
-Using the `dist` or `zip` arguments will generate *every* zip. However, zip files will also be created when you use another generic argument ( like `html` ) *without* setting the `NOARCHIVE` option. Zip files are generated in the `ZIP/` directory, matching the directory structure of the files they contain.
+Using the `dist` or `zip` arguments will generate *every* zip. However, zip files will also be created when you use another generic argument ( like `html` ) unless the `NOARCHIVE` option is set. Zip files are generated in the `ZIP/` directory, matching the directory structure of the files they contain.
 
 #### Other arguments
 
 There are a few special arguments which donʼt just generate a single type of file :
 
-+ `all` or `everything` : This is the same as specifying `html tex pdf png`.
++ `all` or `everything` : This is the same as specifying `md xhtml tex pdf png`.
 
 + `clean` : Removes the build directory and temporary build files.
 
@@ -197,7 +197,7 @@ Finally, you can use a specific style name ( the name of a file in `Styles/`�
 
 + `ALLSTYLES` : Embed every stylesheet in every HTML document. This will still generate separate HTML files for each provided style, but the only difference between these files will be which stylesheet is the default.
 
-+ `NOARCHIVE` : Do not generate ZIPs.
++ `NOARCHIVE` : Do not generate ZIPs ( unless specifically requested, eg with the `zip` argument ).
 
 + `VERBOSE` : Shows verbose output ; especially useful for debugging LaTeX.
 
@@ -215,7 +215,9 @@ There are a number of `⟨ overrides ⟩` which can be used to further confi
 
 + `CHAPTERPREFIX` : The prefix for non­‑appendix chapters. Defaults to `Chapters/`. Must not contain colons or spaces.
 
-+ `DRAFTS` : If nonempty, automatically symlinks in the `Markdown/` folder to the last file in the equivalent folder in the specified directory. For example, `DRAFTS=Drafts` will symlink `Markdown/Chapters/01` to `Drafts/Chapters/01/$N.md`. If you use this, you should not place files in the `Markdown/` directory, and it will be deleted on `gone`. Defaults to empty.
++ `DRAFTS` : If nonempty, automatically symlinks in the `Markdown/` folder to the last file in the equivalent folder in the specified directory. For example, `DRAFTS=Drafts` will symlink `Markdown/Chapters/01` to `Drafts/Chapters/01/$N.md`. If you use this, you should not place files in the `Markdown/` directory, as it will be deleted on `gone`. Defaults to empty.
+
+	As a standard makefile limitation, symlinks will not update if they are more recent than the files they “ should ” be pointing to ( especially relevant in the case that they once pointed to a newer file which was deleted ). Simply delete any outdated symlinks to force their regeneration.
 
 + `FULLTEXT` : The name to use for the fulltext PDF/PNG file( s ). Defaults to `text`. Naturally, it will cause problems if you have a source file with the same name as this file.
 
