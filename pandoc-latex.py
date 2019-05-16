@@ -104,6 +104,9 @@ def action(elem, doc):
 				Div(*elem.content),
 				RawBlock('\\end{snugshade}', format='latex')
 			]
+	elif isinstance(elem, Header):
+		if elem.level == 1:
+			return Header(*elem.content, attributes=elem.attributes, classes=(elem.classes[:] if doc.get_metadata('type') == 'chapter' or doc.get_metadata('type') == 'appendix' else ['unnumbered'] + elem.classes), identifier=elem.identifier, level=1)
 	elif isinstance(elem, Span):
 		if 'lettrine' in elem.classes and len(elem.content) > 0:
 			madelettrine = False

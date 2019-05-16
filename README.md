@@ -299,10 +299,10 @@ If you have other build tasks which you need to complete, a simple `include` may
 
 	Makefile: ;
 	%: force
-		@$(MAKE) -f BookGen/GNUmakefile $@
+		@$(MAKE) -ef BookGen/GNUmakefile $@
 	force: ;
 
-Be sure to always write `GNUmakefile` with correct capitalization when calling it from another make.
+Setting the `-e` flag allows you to export options and overrides from the parent makefile. Be sure to always write `GNUmakefile` with correct capitalization.
 
 ## Prior art
 

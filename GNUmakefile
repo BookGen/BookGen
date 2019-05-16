@@ -54,13 +54,13 @@ standalonenames = $(patsubst Markdown/%.md,%,$(1))
 srcs = $(patsubst %,Markdown/%.md,$(1))
 
 ifdef DRAFTS
-standalonesrcs := $(sort $(filter-out $(chaptersrcs) $(appendixsrcs),$(patsubst $(DRAFTS)/%/,Markdown/%.md,$(dir $(wildcard $(DRAFTS)/*.md)))))
 chaptersrcs := $(sort $(patsubst $(DRAFTS)/%/,Markdown/%.md,$(dir $(wildcard $(DRAFTS)/$(CHAPTERPREFIX)[0-9][0-9]/*.md))))
 appendixsrcs := $(sort $(patsubst $(DRAFTS)/%/,Markdown/%.md,$(dir $(wildcard $(DRAFTS)/$(APPENDIXPREFIX)[0-9][0-9]/*.md))))
+standalonesrcs := $(sort $(filter-out $(chaptersrcs) $(appendixsrcs),$(patsubst $(DRAFTS)/%/,Markdown/%.md,$(dir $(wildcard $(DRAFTS)/*/*.md)))))
 else
-standalonesrcs := $(sort $(filter-out $(chaptersrcs) $(appendixsrcs),$(wildcard Markdown/*.md)))
 chaptersrcs := $(sort $(wildcard Markdown/$(CHAPTERPREFIX)[0-9][0-9].md))
 appendixsrcs := $(sort $(wildcard Markdown/$(APPENDIXPREFIX)[0-9][0-9].md))
+standalonesrcs := $(sort $(filter-out $(chaptersrcs) $(appendixsrcs),$(wildcard Markdown/*.md)))
 endif
 allsrcs := $(standalonesrcs) $(chaptersrcs) $(appendixsrcs)
 
@@ -197,7 +197,7 @@ endef
 # YAML #
 
 # We do not want to set the chapter for standalone documents.
-chapteryaml = $(if $(findstring standalone,$(call types,$<)),,echo "chapter: $(call names,$<)";)
+chapteryaml = $(if $(findstring $(call types,$<), chapter appendix),echo "chapter: $(call names,$<)";,)
 
 fileyaml = echo "name: $(call names,$<)"; $(chapteryaml) $(if $(DRAFTS),echo "draft: $(basename $(notdir $(wildcard $(DRAFTS)/$(call standalonenames,$<)/*.md)))";,) echo "type: $(call types,$<)"
 
@@ -226,7 +226,7 @@ $(call unstyledeverything,LaTeX,tex): LaTeX/%.tex: $$(call srcs,$$*) $(YAML) $(s
 LaTeX/$(INDEX).tex: $$(call unstyledeverything,LaTeX,tex) $(YAML) $(srcdir)/pandoc-latex.py
 	$(makefolders)
 	(echo "---"; cat $(YAML); echo "name: $(INDEX)"; echo "type: index"; echo "...") | pandoc -f markdown-smart -t latex-smart --standalone --template "$(srcdir)/template.tex" --filter "$(srcdir)/pandoc-latex.py" -o $@ --top-level-division=chapter $(if $(BIBLIOGRAPHY),--biblatex,)
-	(echo "\\\\frontmatter"; $(foreach standalone,$(allstandalonenames),echo "\\\\include{$(standalone)}";) echo "\\\\tableofcontents"; echo; echo "\\\\mainmatter"; echo "\\\\openany \\\\cleardoublepage"; echo; $(foreach chapter,$(allchapternames),echo "\\\\include{$(CHAPTERPREFIX)$(chapter)}";) echo; echo "\\\\appendix"; $(foreach appendix,$(allappendixnames),echo "\\\\include{$(APPENDIXPREFIX)$(appendix)}";) echo; echo "\\\\backmatter") >> $@
+	(echo "\\\\frontmatter"; $(foreach standalone,$(allstandalonenames),echo "\\\\include{$(standalone)}";) echo "\\\\cleardoublepage \\\\tableofcontents"; echo; echo "\\\\cleardoublepage \\\\mainmatter"; echo; $(foreach chapter,$(allchapternames),echo "\\\\include{$(CHAPTERPREFIX)$(chapter)}";) echo; echo "\\\\cleardoublepage \\\\appendix"; $(foreach appendix,$(allappendixnames),echo "\\\\include{$(APPENDIXPREFIX)$(appendix)}";) echo; echo "\\\\cleardoublepage \\\\backmatter") >> $@
 	@echo "LaTeX index generated at $@"
 
 # HTML #
@@ -249,7 +249,7 @@ $(call allfiles,HTML,css,xhtml,$(basename $(BIBLIOGRAPHY))): HTML/%/$(basename $
 
 # PDF BUILDFILES #
 
-buildtext = cd $(BUILDDIR)/$(call styles,$@) && $(LATEX) --jobname=$(call filenames,PDF,$(call styles,$@),pdf,$@) $(if $(VERBOSE),,--interaction=batchmode --halt-on-error) --file-line-error "\documentclass{style}\nofiles\usepackage{bookgen}$(if $(BIBLIOGRAPHY),\usepackage$(BIBREQUIRE)\addbibresource{bibliography.bib}\nocite{*},)\begin{document}\makeatletter\@nameuse{cp@$(call filenames,PDF,$(call styles,$@),pdf,$@)@pre}\makeatother\input{$(call filenames,PDF,$(call styles,$@),pdf,$@)}\end{document}"
+buildtext = cd $(BUILDDIR)/$(call styles,$@) && $(LATEX) --jobname=$(call filenames,PDF,$(call styles,$@),pdf,$@) $(if $(VERBOSE),,--interaction=batchmode --halt-on-error) --file-line-error "\documentclass{style}\nofiles\usepackage{bookgen}$(if $(BIBLIOGRAPHY),\usepackage$(BIBREQUIRE)\addbibresource{bibliography.bib}\nocite{*},)\begin{document}\makeatletter\@nameuse{cp@$(call filenames,PDF,$(call styles,$@),pdf,$@)@pre}\makeatother$(if $(findstring $(call types,$(call srcs,$(call filenames,PDF,$(call styles,$@),pdf,$@))),chapter appendix),\mainmatter ,\frontmatter )\input{$(call filenames,PDF,$(call styles,$@),pdf,$@)}\end{document}"
 
 buildfulltext = cd $(BUILDDIR)/$* && $(LATEX) --jobname=$(FULLTEXT) $(if $(VERBOSE),,--interaction=batchmode --halt-on-error) --file-line-error "\documentclass{style}\usepackage{Makefile}\usepackage{bookgen}$(if $(BIBLIOGRAPHY),\usepackage$(BIBREQUIRE)\addbibresource{bibliography.bib}\nocite{*},)\input{GO.xxx}\input{$(INDEX)}$(if $(BIBLIOGRAPHY),\printbibliography,)\end{document}"
 
