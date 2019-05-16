@@ -45,6 +45,7 @@ In addition to GNU Make, you will need to make sure you have the following insta
 			+ `hyperref`
 			+ `logreq`
 			+ `ncctools`
+			+ `soul`
 			+ `ulem`
 			+ `xcolor`
 			+ `ifetex`

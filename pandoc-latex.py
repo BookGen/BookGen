@@ -17,10 +17,7 @@ def unindent(elem,doc):
 		pass
 	elif isinstance(elem, Para):
 		unindented = True
-		result = [
-			RawInline('\\noindent', format='latex'),
-			Span(*elem.content)
-		]
+		result = [RawInline('\\noindent ', format='latex')] + elem.content.list
 		return Para(*result)
 
 def makelettrine(elem,doc):
@@ -44,9 +41,9 @@ def action(elem, doc):
 		elif elem.text=='<b>':
 			return RawInline('\\textbf{', format='latex')
 		elif elem.text=='<dfn>':
-			return RawInline('\\textbf{\\emph{', format='latex')
+			return RawInline('\\textbf{\\textit{', format='latex')
 		elif elem.text=='<cite>' or elem.text=='<i>':
-			return RawInline('\\emph{', format='latex')
+			return RawInline('\\textit{', format='latex')
 		elif elem.text=='<small>':
 			return RawInline('{\small{}', format='latex')
 		elif re.match(r'^<br */?>$', elem.text):
