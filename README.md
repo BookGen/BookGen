@@ -108,9 +108,19 @@ There are a few added features you can take advantage of in your Markdown for sp
 		| Yes, very good indeed.
 		:::::::::::::::::::::
 
++ A Div with a `role` of `note` can be used for notes:
+
+		::: {role=note}
+		This is a note.
+		:::
+
 + A Span with a class of `lettrine` can be used for leading text:
 
 		[This is the beginning]{.lettrine} of a section of text.
+
++ A Span with a `data-colour` ( or `data-color` ) attribute can be used to set the text colour. This can be either a 6­‑digit HTML hex value or an SVG colour name. In the latter case, the name must be properly capitalized:
+
+		Some [red]{data-colour=#FF0000} and [blue]{data-colour=MidnightBlue} text.
 
 + An empty Span with a class of `at` can be used to generate a `\@` for sentence­‑spacing adjustment in LaTeX. This is only necessary if you are generating PDFs with a style which does not use `\frenchspacing`.
 
@@ -125,6 +135,7 @@ The metadata provided in `info.yml` can customize the compiled result. The ava
 + `title` : The title of the work ( plaintext only )
 + `series` : The series that the work belongs to ( plaintext only )
 + `author` : The author of the work ( plaintext only )
++ `publisher` : The publisher of the work ( plaintext only )
 + `description` : A description of the work ( plaintext only )
 + `year` : The copyright year( s ) of the work
 + `rights` : The ( short ) rights or license statement associated with the work

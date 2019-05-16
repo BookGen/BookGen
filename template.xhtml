@@ -4,8 +4,11 @@
 	<title>$if(series)$$series$ – $endif$$if(title)$$title$$endif$$if(name)$ $name$$endif$</title>
 	<meta charset="utf-8"/>
 	<meta name="generator" content="pandoc"/>
-$if(author)$
+$for(author)$
 	<meta name="author" content="$author$"/>
+$endfor$
+$if(publisher)$
+	<meta name="publisher" content="$publisher$"/>
 $endif$
 $if(keywords)$
 	<meta name="keywords" content="$for(keywords)$$keywords$$sep$, $endfor$"/>

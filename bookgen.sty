@@ -18,7 +18,7 @@
 \newunicodechar{ }{\quad}
 
 % Draft mark %
-\newcommand{\draftmark}{\backgroundsetup{
+\providecommand{\draftmark}{\backgroundsetup{
     contents={\Huge DRAFT},
     color={red},
     angle={-18},
@@ -36,17 +36,18 @@
 \DraftOn
 
 % Metadata setup %
-\newcommand{\titleinfo}{A Work}
-\newcommand{\seriesinfo}{}
-\newcommand{\authorinfo}{Anonymous}
-\newcommand{\descriptioninfo}{}
-\newcommand{\yearinfo}{\the\year}
-\newcommand{\rightsinfo}{All rights reserved.}
-\newcommand{\editioninfo}{Standard Edition}
-\newcommand{\draftinfo}{\today}
-\newcommand{\detailsinfo}{}
-\newcommand{\copyrightinfo}{©~\yearinfo{} \authorinfo{}. \rightsinfo{}}
-\newcommand{\bookgentype}{standalone}
+\providecommand{\titleinfo}{A Work}
+\providecommand{\seriesinfo}{}
+\providecommand{\authorinfo}{Anonymous}
+\providecommand{\descriptioninfo}{}
+\providecommand{\yearinfo}{\the\year}
+\providecommand{\rightsinfo}{All rights reserved.}
+\providecommand{\editioninfo}{Standard Edition}
+\providecommand{\draftinfo}{\today}
+\providecommand{\detailsinfo}{}
+\providecommand{\publisherinfo}{Self­‑published}
+\providecommand{\copyrightinfo}{©~\yearinfo{} \authorinfo{}. \rightsinfo{}}
+\providecommand{\bookgentype}{standalone}
 
 %%  Underline setup:  %%
 \setlength{\ULdepth}{.5ex}
@@ -55,7 +56,9 @@
 \mathchardef\UrlBreakPenalty=0
 \mathchardef\UrlBigBreakPenalty=0
 \renewcommand{\UrlFont}{}
-\newcommand{\link}[2]{\dashuline{\href{#1}{#2}}}
+
+% Colors setup %
+\providecolor{shadecolor}{named}{Gainsboro}
 
 % Hyperlink setup %
 \hypersetup{

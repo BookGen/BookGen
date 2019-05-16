@@ -33,11 +33,15 @@ $endif$
 $if(details)$
 \renewcommand{\detailsinfo}{$details$}
 $endif$
+$if(publisher)$
+\renewcommand{\publisherinfo}{$publisher$}
+$endif$
 $if(final)$
 \DraftOff
 $else$
 \DraftOn
 $endif$
+
 $for(header-includes)$
 $header-includes$
 $endfor$

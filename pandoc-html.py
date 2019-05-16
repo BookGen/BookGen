@@ -27,7 +27,9 @@ def action(elem, doc):
 		if 'lettrine' in elem.classes and len(elem.content) > 0:
 			madelettrine = False
 			elem.walk(makelettrine)
-		if 'at' in elem.classes and len(elem.content) == 0:
+		elif 'data-colour' in elem.attributes or 'data-color' in elem.attributes:
+			return Span(*elem.content, identifier=elem.identifier, classes=elem.classes, attributes=dict( { 'style': 'color: ' + elem.attributes.get('data-colour', elem.attributes.get('data-color')) }, **elem.attributes))
+		elif 'at' in elem.classes and len(elem.content) == 0:
 			return []
 
 def main(doc=None):
