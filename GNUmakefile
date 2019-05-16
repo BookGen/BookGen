@@ -12,7 +12,7 @@
 # See README.md for usage.
 
 SHELL = /bin/sh
-srcdir := $(patsubst $(dir $(realpath $(lastword $(MAKEFILE_LIST)))),%/,%)
+srcdir := $(patsubst %/GNUmakefile,%,$(lastword $(MAKEFILE_LIST)))
 override octothorpe := \#
 
 #  DEFAULT VALUES FOR OVERRIDES  #
