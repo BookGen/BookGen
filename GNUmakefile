@@ -226,7 +226,7 @@ $(call unstyledeverything,LaTeX,tex): LaTeX/%.tex: $$(call srcs,$$*) $(YAML) $(s
 LaTeX/$(INDEX).tex: $$(call unstyledeverything,LaTeX,tex) $(YAML) $(srcdir)/pandoc-latex.py
 	$(makefolders)
 	(echo "---"; cat $(YAML); echo "name: $(INDEX)"; echo "type: index"; echo "...") | pandoc -f markdown-smart -t latex-smart --standalone --template "$(srcdir)/template.tex" --filter "$(srcdir)/pandoc-latex.py" -o $@ --top-level-division=chapter $(if $(BIBLIOGRAPHY),--biblatex,)
-	(echo "\\\\frontmatter"; $(foreach standalone,$(allstandalonenames),echo "\\\\include{$(standalone)}";) echo "\\\\cleardoublepage \\\\tableofcontents"; echo; echo "\\\\cleardoublepage \\\\mainmatter"; echo; $(foreach chapter,$(allchapternames),echo "\\\\include{$(CHAPTERPREFIX)$(chapter)}";) echo; echo "\\\\cleardoublepage \\\\appendix"; $(foreach appendix,$(allappendixnames),echo "\\\\include{$(APPENDIXPREFIX)$(appendix)}";) echo; echo "\\\\cleardoublepage \\\\backmatter") >> $@
+	(echo "\\\\frontmatter"; $(foreach standalone,$(allstandalonenames),echo "\\\\include{$(standalone)}";) echo "\\\\cleardoublepage \\\\tableofcontents"; echo; echo "\\\\clearpage \\\\null \\\\cleardoublepage \\\\mainmatter"; echo; $(foreach chapter,$(allchapternames),echo "\\\\include{$(CHAPTERPREFIX)$(chapter)}";) echo; echo "\\\\clearpage \\\\null \\\\cleardoublepage \\\\appendix \\\\appendixpage"; $(foreach appendix,$(allappendixnames),echo "\\\\include{$(APPENDIXPREFIX)$(appendix)}";) echo; echo "\\\\clearpage$(if $(BIBLIOGRAPHY), \\\\null \\\\cleardoublepage \\\\backmatter \\\\printbibliography,)") >> $@
 	@echo "LaTeX index generated at $@"
 
 # HTML #
@@ -251,7 +251,7 @@ $(call allfiles,HTML,css,xhtml,$(basename $(BIBLIOGRAPHY))): HTML/%/$(basename $
 
 buildtext = cd $(BUILDDIR)/$(call styles,$@) && $(LATEX) --jobname=$(call filenames,PDF,$(call styles,$@),pdf,$@) $(if $(VERBOSE),,--interaction=batchmode --halt-on-error) --file-line-error "\documentclass{style}\nofiles\usepackage{bookgen}$(if $(BIBLIOGRAPHY),\usepackage$(BIBREQUIRE)\addbibresource{bibliography.bib}\nocite{*},)\begin{document}$(if $(findstring $(call types,$(call srcs,$(call filenames,PDF,$(call styles,$@),pdf,$@))),chapter appendix),\mainmatter ,\frontmatter )$(if $(findstring $(call types,$(call srcs,$(call filenames,PDF,$(call styles,$@),pdf,$@))),appendix),\appendix )\makeatletter\@nameuse{cp@$(call filenames,PDF,$(call styles,$@),pdf,$@)@pre}\makeatother\input{$(call filenames,PDF,$(call styles,$@),pdf,$@)}\end{document}"
 
-buildfulltext = cd $(BUILDDIR)/$* && $(LATEX) --jobname=$(FULLTEXT) $(if $(VERBOSE),,--interaction=batchmode --halt-on-error) --file-line-error "\documentclass{style}\usepackage{Makefile}\usepackage{bookgen}$(if $(BIBLIOGRAPHY),\usepackage$(BIBREQUIRE)\addbibresource{bibliography.bib}\nocite{*},)\input{GO.xxx}\input{$(INDEX)}$(if $(BIBLIOGRAPHY),\printbibliography,)\end{document}"
+buildfulltext = cd $(BUILDDIR)/$* && $(LATEX) --jobname=$(FULLTEXT) $(if $(VERBOSE),,--interaction=batchmode --halt-on-error) --file-line-error "\documentclass{style}\usepackage{Makefile}\usepackage{bookgen}$(if $(BIBLIOGRAPHY),\usepackage$(BIBREQUIRE)\addbibresource{bibliography.bib}\nocite{*},)\input{GO.xxx}\input{$(INDEX)}\end{document}"
 
 $(call allfiles,$(BUILDDIR),cls,sty,Makefile): $(srcdir)/DeluxeMakefile/Makefile.sty; $(link)
 $(call allfiles,$(BUILDDIR),cls,sty,bookgen): $(srcdir)/bookgen.sty; $(link)
