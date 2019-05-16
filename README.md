@@ -297,9 +297,12 @@ If you save such a file as `Makefile` ( or `GNUmakefile` ) in your work dire
 
 If you have other build tasks which you need to complete, a simple `include` may not work for you. In this case, a match­‑anything pattern rule can be used to achieve the same effect. You donʼt need to override `srcdir` with a match­‑anything pattern rule because it will properly be inferred through calling `make` the second time :
 
+	Makefile: ;
 	%: force
 		@$(MAKE) -f BookGen/GNUmakefile $@
 	force: ;
+
+Be sure to always write `GNUmakefile` with correct capitalization when calling it from another make.
 
 ## Prior art
 

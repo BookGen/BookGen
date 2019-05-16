@@ -197,9 +197,9 @@ endef
 # YAML #
 
 # We do not want to set the chapter for standalone documents.
-chapteryaml = $(if $(findstring standalone,$(call types,$<)),,echo "chapter: $(call names,$<)")
+chapteryaml = $(if $(findstring standalone,$(call types,$<)),,echo "chapter: $(call names,$<)";)
 
-fileyaml = echo "name: $(call names,$<)"; $(chapteryaml); $(if $(DRAFTS),echo "draft: $(basename $(notdir $(wildcard $(DRAFTS)/$(call standalonenames,$<)/*.md)))";,) echo "type: $(call types,$<)"
+fileyaml = echo "name: $(call names,$<)"; $(chapteryaml) $(if $(DRAFTS),echo "draft: $(basename $(notdir $(wildcard $(DRAFTS)/$(call standalonenames,$<)/*.md)))";,) echo "type: $(call types,$<)"
 
 # Empty YAML if no file exists.
 $(YAML):
@@ -220,12 +220,12 @@ $(eval $(call unstyledtargets,LaTeX,tex,$(INDEX)))
 
 $(call unstyledeverything,LaTeX,tex): LaTeX/%.tex: $$(call srcs,$$*) $(YAML) $(srcdir)/pandoc-latex.py $(srcdir)/template.tex
 	$(makefolders)
-	(echo "---"; cat $(YAML); $(fileyaml); echo "..."; cat $<) | pandoc -f markdown-smart -t latex-smart --standalone --template $(srcdir)/template.tex --filter $(srcdir)/pandoc-latex.py -o $@ --top-level-division=chapter $(if $(BIBLIOGRAPHY),--biblatex,)
+	(echo "---"; cat $(YAML); $(fileyaml); echo "..."; cat $<) | pandoc -f markdown-smart -t latex-smart --standalone --template "$(srcdir)/template.tex" --filter "$(srcdir)/pandoc-latex.py" -o $@ --top-level-division=chapter $(if $(BIBLIOGRAPHY),--biblatex,)
 	@echo "LaTeX file for $< generated at $@"
 
 LaTeX/$(INDEX).tex: $$(call unstyledeverything,LaTeX,tex) $(YAML) $(srcdir)/pandoc-latex.py
 	$(makefolders)
-	(echo "---"; cat $(YAML); echo "name: $(INDEX)"; echo "type: index"; echo "...") | pandoc -f markdown-smart -t latex-smart --standalone --template $(srcdir)/template.tex --filter $(srcdir)/pandoc-latex.py -o $@ --top-level-division=chapter $(if $(BIBLIOGRAPHY),--biblatex,)
+	(echo "---"; cat $(YAML); echo "name: $(INDEX)"; echo "type: index"; echo "...") | pandoc -f markdown-smart -t latex-smart --standalone --template "$(srcdir)/template.tex" --filter "$(srcdir)/pandoc-latex.py" -o $@ --top-level-division=chapter $(if $(BIBLIOGRAPHY),--biblatex,)
 	(echo "\\\\frontmatter"; $(foreach standalone,$(allstandalonenames),echo "\\\\include{$(standalone)}";) echo "\\\\tableofcontents"; echo; echo "\\\\mainmatter"; echo "\\\\openany \\\\cleardoublepage"; echo; $(foreach chapter,$(allchapternames),echo "\\\\include{$(CHAPTERPREFIX)$(chapter)}";) echo; echo "\\\\appendix"; $(foreach appendix,$(allappendixnames),echo "\\\\include{$(APPENDIXPREFIX)$(appendix)}";) echo; echo "\\\\backmatter") >> $@
 	@echo "LaTeX index generated at $@"
 
@@ -235,7 +235,7 @@ $(eval $(call targets,HTML,css,xhtml,$(INDEX) $(basename $(BIBLIOGRAPHY))))
 
 $(call alleverything,HTML,css,xhtml): $$(call srcs,$$(call filenames,HTML,$$(call styles,$$@),xhtml,$$@)) $(YAML) $(srcdir)/pandoc-html.py $(srcdir)/template.xhtml Styles/$$(call styles,$$@).css
 	$(makefolders)
-	(echo "---"; echo "suppress-bibliography: true"; $(if $(BIBLIOGRAPHY),echo "bibliography: $(addsuffix .bib,$(basename $(BIBLIOGRAPHY)))"; echo "citation-style: $(srcdir)/chicago-note-bibliography-16th-edition.csl";,) echo "styles:"; echo "- name: $(call styles,$@)"; echo "  css: |"; echo '    ```{=html}'; cat Styles/$(call styles,$@).css | sed 's/^/    /'; echo '    ```'; $(if $(ALLSTYLES),$(foreach style,$(filter-out $(call styles,$@),$(stylenames)),echo "- name: $(style)"; echo "  css: |"; echo '    ```{=html}'; cat Styles/$(style).css | sed 's/^/    /'; echo '    ```';)) cat $(YAML); $(fileyaml); echo "..."; cat $<) | pandoc -f markdown-smart -t html5-smart --standalone --template $(srcdir)/template.xhtml --filter $(srcdir)/pandoc-html.py $(if $(BIBLIOGRAPHY),--filter pandoc-citeproc,) -o $@ --self-contained --section-divs --mathml
+	(echo "---"; echo "suppress-bibliography: true"; $(if $(BIBLIOGRAPHY),echo "bibliography: $(addsuffix .bib,$(basename $(BIBLIOGRAPHY)))"; echo "citation-style: '$(realpath $(srcdir)/chicago-note-bibliography-16th-edition.csl)'";,) echo "styles:"; echo "- name: $(call styles,$@)"; echo "  css: |"; echo '    ```{=html}'; cat Styles/$(call styles,$@).css | sed 's/^/    /'; echo '    ```'; $(if $(ALLSTYLES),$(foreach style,$(filter-out $(call styles,$@),$(stylenames)),echo "- name: $(style)"; echo "  css: |"; echo '    ```{=html}'; cat Styles/$(style).css | sed 's/^/    /'; echo '    ```';)) cat $(YAML); $(fileyaml); echo "..."; cat $<) | pandoc -f markdown-smart -t html5-smart --standalone --template "$(srcdir)/template.xhtml" --filter "$(srcdir)/pandoc-html.py" $(if $(BIBLIOGRAPHY),--filter pandoc-citeproc,) -o $@ --self-contained --section-divs --mathml
 	@echo "$(call styles,$@) HTML file for $< generated at $@"
 
 $(call allfiles,HTML,css,xhtml,$(INDEX)): HTML/%/$(INDEX).xhtml: Styles/%.css
@@ -245,7 +245,7 @@ $(call allfiles,HTML,css,xhtml,$(INDEX)): HTML/%/$(INDEX).xhtml: Styles/%.css
 
 $(call allfiles,HTML,css,xhtml,$(basename $(BIBLIOGRAPHY))): HTML/%/$(basename $(BIBLIOGRAPHY)).xhtml: $(BIBLIOGRAPHY) Styles/%.css
 	$(makefolders)
-	(echo "---"; echo "bibliography: $(addsuffix .bib,$(basename $(BIBLIOGRAPHY)))"; echo "citation-style: $(srcdir)/chicago-note-bibliography-16th-edition.csl"; echo "styles:"; echo "- name: $(call styles,$@)"; echo "  css: |"; echo '    ```{=html}'; cat Styles/$(call styles,$@).css | sed 's/^/    /'; echo '    ```'; $(if $(ALLSTYLES),$(foreach style,$(filter-out $(call styles,$@),$(stylenames)),echo "- name: $(style)"; echo "  css: |"; echo '    ```{=html}'; cat Styles/$(style).css | sed 's/^/    /'; echo '    ```';)) cat $(YAML); echo "name: bibliography"; echo "type: bibliography"; echo "nocite: '@*'"; echo "..."; echo "$(octothorpe) Bibliography") | pandoc -f markdown-smart -t html5-smart --standalone --template $(srcdir)/template.xhtml --filter $(srcdir)/pandoc-html.py --filter pandoc-citeproc -o $@ --self-contained --section-divs --mathml
+	(echo "---"; echo "bibliography: $(addsuffix .bib,$(basename $(BIBLIOGRAPHY)))"; echo "citation-style: '$(realpath $(srcdir)/chicago-note-bibliography-16th-edition.csl)'"; echo "styles:"; echo "- name: $(call styles,$@)"; echo "  css: |"; echo '    ```{=html}'; cat Styles/$(call styles,$@).css | sed 's/^/    /'; echo '    ```'; $(if $(ALLSTYLES),$(foreach style,$(filter-out $(call styles,$@),$(stylenames)),echo "- name: $(style)"; echo "  css: |"; echo '    ```{=html}'; cat Styles/$(style).css | sed 's/^/    /'; echo '    ```';)) cat $(YAML); echo "name: bibliography"; echo "type: bibliography"; echo "nocite: '@*'"; echo "..."; echo "$(octothorpe) Bibliography") | pandoc -f markdown-smart -t html5-smart --standalone --template "$(srcdir)/template.xhtml" --filter "$(srcdir)/pandoc-html.py" --filter pandoc-citeproc -o $@ --self-contained --section-divs --mathml
 
 # PDF BUILDFILES #
 
@@ -261,7 +261,7 @@ $(call alleverything,$(BUILDDIR),cls,tex,$(INDEX)): $$(call unstyledfiles,LaTeX,
 
 $(call allfiles,$(BUILDDIR),cls,xxx,GO): $(BUILDDIR)/%/GO.xxx: $(YAML) $(srcdir)/template.xxx
 	$(makefolders)
-	(echo "---"; cat $(YAML); echo "style: $*"; echo "...") | pandoc -f markdown -t latex --standalone --template $(srcdir)/template.xxx -o $@
+	(echo "---"; cat $(YAML); echo "style: $*"; echo "...") | pandoc -f markdown -t latex --standalone --template "$(srcdir)/template.xxx" -o $@
 
 $(call allfiles,$(BUILDDIR),cls,aux,$(FULLTEXT)): $(BUILDDIR)/%/$(FULLTEXT).aux: $$(call everything,$(BUILDDIR),$$*,tex,$(INDEX)) $(BUILDDIR)/%/Makefile.sty $(BUILDDIR)/%/bookgen.sty $(BUILDDIR)/%/GO.xxx $(BUILDDIR)/%/style.cls
 	$(makefolders)
@@ -292,6 +292,6 @@ $(eval $(call targets,PNG,cls,png/index.html,$(FULLTEXT)))
 
 $(call alleverything,PNG,cls,png/index.html,$(FULLTEXT)): PNG/%/index.html: PDF/%.pdf $(srcdir)/StoryTime/index.html
 	$(makefolders)
-	cp $(srcdir)/StoryTime/index.html $@
+	cp "$(srcdir)/StoryTime/index.html" $@
 	magick -density 144 $< -quality 100 -colorspace RGB -alpha remove $(dir $@)Page_%d.png; ((( m=0 )); for page in $(dir $@)/*.png; do echo; echo Page_$$m.png | tr '\n' ' '; (( m++ )); pdftotext -f $$m -l $$m -enc UTF-8 -eol unix -nopgbrk -raw $< - | awk '{gsub(/-\n/, ""); print}' | tr '\n' ' ' | tr -s ' '; done; echo) >> $@
 	@echo $(if $(findstring PNG/$(call styles,$@)/$(FULLTEXT)/index.html,$@),"$(call styles,$@) fulltext PNGs generated at $(dir $@)","$(call styles,$@) PNGs for $(call srcs,$(call filenames,PNG,$(call styles,$@),/index.html,$@)) generated at $(dir $@)")
