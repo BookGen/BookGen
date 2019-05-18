@@ -277,13 +277,13 @@ $(eval $(call targets,PDF,cls,pdf,$(FULLTEXT)))
 $(call alleverything,PDF,cls,pdf): PDF/$$(call styles,$$@)/$(FULLTEXT).pdf
 	$(makefolders)
 	$(buildtext)
-	mv -f $(BUILDDIR)/$(call styles,$@)/$(call filenames,PDF,$(call styles,$@),pdf,$@).pdf $@
+	$(if $(VECTORIZE),gs -dNoOutputFonts -sDEVICE=pdfwrite $(if $(VERBOSE),,-dQUIET) -o $@ $(BUILDDIR)/$(call styles,$@)/$(call filenames,PDF,$(call styles,$@),pdf,$@).pdf,mv -f $(BUILDDIR)/$(call styles,$@)/$(call filenames,PDF,$(call styles,$@),pdf,$@).pdf $@)
 	@echo "$(call styles,$@) PDF for $(call srcs,$(call filenames,PDF,$(call styles,$@),pdf,$@)) generated at $@"
 
 $(call allfiles,PDF,cls,pdf,$(FULLTEXT)): PDF/%/$(FULLTEXT).pdf: $(BUILDDIR)/%/$(FULLTEXT).aux $(if $(BIBLIOGRAPHY),$(BUILDDIR)/%/$(FULLTEXT).bbl,)
 	$(makefolders)
 	$(buildfulltext)
-	mv -f $(BUILDDIR)/$*/$(FULLTEXT).pdf $@
+	$(if $(VECTORIZE),gs -dNoOutputFonts -sDEVICE=pdfwrite $(if $(VERBOSE),,-dQUIET) -o $@ $(BUILDDIR)/$*/$(FULLTEXT).pdf,mv -f $(BUILDDIR)/$*/$(FULLTEXT).pdf $@)
 	@echo "$* fulltext PDF generated at $@"
 
 # PNGs #

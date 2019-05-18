@@ -239,6 +239,8 @@ Finally, you can use a specific style name ( the name of a file in `Styles/`�
 
 + `NOARCHIVE` : Do not generate ZIPs ( unless specifically requested, eg with the `zip` argument ).
 
++ `VECTORIZE` : Vectorize the final PDFs instead of leaving them with embedded fonts. Specifying this option may help with fonts which do not play nicely with printers. However, this will disable text selection on computers, so you should not use this option when compiling for digital distribution.
+
 + `VERBOSE` : Shows verbose output ; especially useful for debugging LaTeX.
 
 ### Overrides
