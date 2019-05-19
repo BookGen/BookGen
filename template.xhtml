@@ -27,7 +27,7 @@ $endfor$
 </head>
 <body>
 	<article>
-		<header>$if(series)$$series$ – $endif$$if(title)$$title$$endif$$if(chapter)$ $chapter$$endif$</header>
+		<header>$if(series)$$series$ – $endif$$if(title)$$title$$endif$$if(chapter)$ $if(appendix)$A$endif$$chapter$$endif$</header>
 $for(include-before)$
 
 		<!-- BEGIN BEFORE -->

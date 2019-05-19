@@ -198,7 +198,7 @@ endef
 # YAML #
 
 # We do not want to set the chapter for standalone documents.
-chapteryaml = $(if $(findstring $(call types,$<), chapter appendix),echo "chapter: $(call names,$<)";,)
+chapteryaml = $(if $(findstring $(call types,$<),chapter appendix),echo "chapter: $(call names,$<)";,)
 
 fileyaml = echo "name: $(call names,$<)"; $(chapteryaml) $(if $(DRAFTS),echo "draft: $(basename $(notdir $(wildcard $(DRAFTS)/$(call standalonenames,$<)/*.md)))";,) echo "type: $(call types,$<)"
 
@@ -236,7 +236,7 @@ $(eval $(call targets,HTML,css,xhtml,$(INDEX) $(basename $(BIBLIOGRAPHY))))
 
 $(call alleverything,HTML,css,xhtml): $$(call srcs,$$(call filenames,HTML,$$(call styles,$$@),xhtml,$$@)) $(YAML) $(srcdir)/pandoc-html.py $(srcdir)/template.xhtml Styles/$$(call styles,$$@).css
 	$(makefolders)
-	(cat $<; echo; echo; echo "---"; echo "suppress-bibliography: true"; $(if $(BIBLIOGRAPHY),echo "bibliography: $(addsuffix .bib,$(basename $(BIBLIOGRAPHY)))"; echo "citation-style: '$(realpath $(srcdir)/chicago-note-bibliography-16th-edition.csl)'";,) echo "styles:"; echo "- name: $(call styles,$@)"; echo "  css: |"; echo '    ```{=html}'; cat Styles/$(call styles,$@).css | sed 's/^/    /'; echo '    ```'; $(if $(ALLSTYLES),$(foreach style,$(filter-out $(call styles,$@),$(stylenames)),echo "- name: $(style)"; echo "  css: |"; echo '    ```{=html}'; cat Styles/$(style).css | sed 's/^/    /'; echo '    ```';)) cat $(YAML); $(fileyaml); echo "...") | pandoc -f markdown-smart -t html5-smart --standalone --template "$(srcdir)/template.xhtml" --filter "$(srcdir)/pandoc-html.py" $(if $(BIBLIOGRAPHY),--filter pandoc-citeproc,) -o $@ --self-contained --section-divs --mathml
+	(cat $<; echo; echo; echo "---"; echo "suppress-bibliography: true"; $(if $(BIBLIOGRAPHY),echo "bibliography: $(addsuffix .bib,$(basename $(BIBLIOGRAPHY)))"; echo "citation-style: '$(realpath $(srcdir)/chicago-note-bibliography-16th-edition.csl)'";,) echo "styles:"; echo "- name: $(call styles,$@)"; echo "  css: |"; echo '    ```{=html}'; cat Styles/$(call styles,$@).css | sed 's/^/    /'; echo '    ```'; $(if $(ALLSTYLES),$(foreach style,$(filter-out $(call styles,$@),$(stylenames)),echo "- name: $(style)"; echo "  css: |"; echo '    ```{=html}'; cat Styles/$(style).css | sed 's/^/    /'; echo '    ```';)) cat $(YAML); $(fileyaml); $(if $(findstring $(call types,$<),appendix),echo "appendix: true";,) echo "...") | pandoc -f markdown-smart -t html5-smart --standalone --template "$(srcdir)/template.xhtml" --filter "$(srcdir)/pandoc-html.py" $(if $(BIBLIOGRAPHY),--filter pandoc-citeproc,) -o $@ --self-contained --section-divs --mathml
 	@echo "$(call styles,$@) HTML file for $< generated at $@"
 
 $(call allfiles,HTML,css,xhtml,$(INDEX)): $(FILEPREFIX)HTML/%/$(INDEX).xhtml: Styles/%.css
