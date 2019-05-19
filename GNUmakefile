@@ -258,13 +258,13 @@ $(patsubst $(FILEPREFIX)%,%,$(call allfiles,$(BUILDDIR),cls,sty,Makefile)): $(sr
 $(patsubst $(FILEPREFIX)%,%,$(call allfiles,$(BUILDDIR),cls,sty,bookgen)): $(srcdir)/bookgen.sty; $(link)
 $(patsubst $(FILEPREFIX)%,%,$(call allfiles,$(BUILDDIR),cls,cls,style)): $(BUILDDIR)/%/style.cls: Styles/%.cls; $(link)
 $(patsubst $(FILEPREFIX)%,%,$(call allfiles,$(BUILDDIR),cls,bib,bibliography)): $(addsuffix .bib,$(basename $(BIBLIOGRAPHY))); $(link)
-$(patsubst $(FILEPREFIX)%,%,$(call alleverything,$(BUILDDIR),cls,tex,$(INDEX))): $$(call unstyledfiles,LaTeX,tex,$$(call filenames,$(BUILDDIR),$$(call styles,$$@),tex,$(FILEPREFIX)$$@)); $(link)
+$(patsubst $(FILEPREFIX)%,%,$(call alleverything,$(BUILDDIR),cls,tex,$(INDEX))): $$(call unstyledfiles,LaTeX,tex,$$(call filenames,$(BUILDDIR),$$(call styles,$(FILEPREFIX)$$@),tex,$(FILEPREFIX)$$@)); $(link)
 
 $(patsubst $(FILEPREFIX)%,%,$(call allfiles,$(BUILDDIR),cls,xxx,GO)): $(BUILDDIR)/%/GO.xxx: $(YAML) $(srcdir)/template.xxx
 	$(makefolders)
 	(echo "---"; cat $(YAML); echo "style: $*"; echo "...") | pandoc -f markdown -t latex --standalone --template "$(srcdir)/template.xxx" -o $@
 
-$(patsubst $(FILEPREFIX)%,%,$(call allfiles,$(BUILDDIR),cls,aux,$(FULLTEXT))): $(BUILDDIR)/%/$(FULLTEXT).aux: $(BUILDDIR)/%/$(INDEX).tex $(BUILDDIR)/%/Makefile.sty $(BUILDDIR)/%/bookgen.sty $(BUILDDIR)/%/GO.xxx $(BUILDDIR)/%/style.cls
+$(patsubst $(FILEPREFIX)%,%,$(call allfiles,$(BUILDDIR),cls,aux,$(FULLTEXT))): $(BUILDDIR)/%/$(FULLTEXT).aux: $(patsubst $(FILEPREFIX)%,%,$(call alleverything,$(BUILDDIR),cls,tex,$(INDEX))) $(BUILDDIR)/%/Makefile.sty $(BUILDDIR)/%/bookgen.sty $(BUILDDIR)/%/GO.xxx $(BUILDDIR)/%/style.cls
 	$(makefolders)
 	$(buildfulltext)
 
@@ -291,8 +291,8 @@ $(call allfiles,PDF,cls,pdf,$(FULLTEXT)): $(FILEPREFIX)PDF/%/$(FULLTEXT).pdf: $(
 
 $(eval $(call targets,PNG,cls,png/index.html,$(FULLTEXT)))
 
-$(call alleverything,PNG,cls,png/index.html,$(FULLTEXT)): $(FILEPREFIX)PNG/%/index.html: PDF/%.pdf $(srcdir)/StoryTime/index.html
+$(call alleverything,PNG,cls,png/index.html,$(FULLTEXT)): $(FILEPREFIX)PNG/%/index.html: $(FILEPREFIX)PDF/%.pdf $(srcdir)/StoryTime/index.html
 	$(makefolders)
 	cp "$(srcdir)/StoryTime/index.html" $@
 	magick -density 144 $< -quality 100 -colorspace RGB -alpha remove $(dir $@)Page_%d.png; ((( m=0 )); for page in $(dir $@)/*.png; do echo; echo Page_$$m.png | tr '\n' ' '; (( m++ )); pdftotext -f $$m -l $$m -enc UTF-8 -eol unix -nopgbrk -raw $< - | awk '{gsub(/-\n/, ""); print}' | tr '\n' ' ' | tr -s ' '; done; echo) >> $@
-	@echo $(if $(findstring PNG/$(call styles,$@)/$(FULLTEXT)/index.html,$@),"$(call styles,$@) fulltext PNGs generated at $(dir $@)","$(call styles,$@) PNGs for $(call srcs,$(call filenames,PNG,$(call styles,$@),/index.html,$@)) generated at $(dir $@)")
+	@echo $(if $(findstring $(FILEPREFIX)PNG/$(call styles,$@)/$(FULLTEXT)/index.html,$@),"$(call styles,$@) fulltext PNGs generated at $(dir $@)","$(call styles,$@) PNGs for $(call srcs,$(call filenames,PNG,$(call styles,$@),/index.html,$@)) generated at $(dir $@)")
