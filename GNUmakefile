@@ -254,21 +254,21 @@ buildtext = cd $(BUILDDIR)/$(call styles,$@) && $(LATEX) --jobname=$(call filena
 
 buildfulltext = cd $(BUILDDIR)/$* && $(LATEX) --jobname=$(FULLTEXT) $(if $(VERBOSE),,--interaction=batchmode --halt-on-error) --file-line-error "\documentclass{style}\usepackage{Makefile}\usepackage{bookgen}$(if $(BIBLIOGRAPHY),\usepackage$(BIBREQUIRE)\addbibresource{bibliography.bib}\nocite{*},)\input{GO.xxx}\input{$(INDEX)}\end{document}"
 
-$(call allfiles,$(BUILDDIR),cls,sty,Makefile): $(srcdir)/DeluxeMakefile/Makefile.sty; $(link)
-$(call allfiles,$(BUILDDIR),cls,sty,bookgen): $(srcdir)/bookgen.sty; $(link)
-$(call allfiles,$(BUILDDIR),cls,cls,style): $(BUILDDIR)/%/style.cls: Styles/%.cls; $(link)
-$(call allfiles,$(BUILDDIR),cls,bib,bibliography): $(addsuffix .bib,$(basename $(BIBLIOGRAPHY))); $(link)
-$(call alleverything,$(BUILDDIR),cls,tex,$(INDEX)): $$(call unstyledfiles,LaTeX,tex,$$(call filenames,$(BUILDDIR),$$(call styles,$$@),tex,$$@)); $(link)
+$(patsubst $(FILEPREFIX)%,%,$(call allfiles,$(BUILDDIR),cls,sty,Makefile)): $(srcdir)/DeluxeMakefile/Makefile.sty; $(link)
+$(patsubst $(FILEPREFIX)%,%,$(call allfiles,$(BUILDDIR),cls,sty,bookgen)): $(srcdir)/bookgen.sty; $(link)
+$(patsubst $(FILEPREFIX)%,%,$(call allfiles,$(BUILDDIR),cls,cls,style)): $(BUILDDIR)/%/style.cls: Styles/%.cls; $(link)
+$(patsubst $(FILEPREFIX)%,%,$(call allfiles,$(BUILDDIR),cls,bib,bibliography)): $(addsuffix .bib,$(basename $(BIBLIOGRAPHY))); $(link)
+$(patsubst $(FILEPREFIX)%,%,$(call alleverything,$(BUILDDIR),cls,tex,$(INDEX))): $$(call unstyledfiles,LaTeX,tex,$$(call filenames,$(BUILDDIR),$$(call styles,$$@),tex,$$@)); $(link)
 
-$(call allfiles,$(BUILDDIR),cls,xxx,GO): $(BUILDDIR)/%/GO.xxx: $(YAML) $(srcdir)/template.xxx
+$(patsubst $(FILEPREFIX)%,%,$(call allfiles,$(BUILDDIR),cls,xxx,GO)): $(BUILDDIR)/%/GO.xxx: $(YAML) $(srcdir)/template.xxx
 	$(makefolders)
 	(echo "---"; cat $(YAML); echo "style: $*"; echo "...") | pandoc -f markdown -t latex --standalone --template "$(srcdir)/template.xxx" -o $@
 
-$(call allfiles,$(BUILDDIR),cls,aux,$(FULLTEXT)): $(BUILDDIR)/%/$(FULLTEXT).aux: $$(call everything,$(BUILDDIR),$$*,tex,$(INDEX)) $(BUILDDIR)/%/Makefile.sty $(BUILDDIR)/%/bookgen.sty $(BUILDDIR)/%/GO.xxx $(BUILDDIR)/%/style.cls
+$(patsubst $(FILEPREFIX)%,%,$(call allfiles,$(BUILDDIR),cls,aux,$(FULLTEXT))): $(BUILDDIR)/%/$(FULLTEXT).aux: $$(call everything,$(BUILDDIR),$$*,tex,$(INDEX)) $(BUILDDIR)/%/Makefile.sty $(BUILDDIR)/%/bookgen.sty $(BUILDDIR)/%/GO.xxx $(BUILDDIR)/%/style.cls
 	$(makefolders)
 	$(buildfulltext)
 
-$(call allfiles,$(BUILDDIR),cls,bbl,$(FULLTEXT)): $(BUILDDIR)/%/$(FULLTEXT).bbl: $(BUILDDIR)/%/bibliography.bib | $(BUILDDIR)/%/$(FULLTEXT).aux
+$(patsubst $(FILEPREFIX)%,%,$(call allfiles,$(BUILDDIR),cls,bbl,$(FULLTEXT))): $(BUILDDIR)/%/$(FULLTEXT).bbl: $(BUILDDIR)/%/bibliography.bib | $(BUILDDIR)/%/$(FULLTEXT).aux
 	cd $(BUILDDIR)/$* && biber $(if $(VERBOSE),,--onlylog) $(FULLTEXT)
 
 # PDF #
