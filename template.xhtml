@@ -16,13 +16,13 @@ $endif$
 $if(description)$
 	<meta name="description" content="$description$"/>
 $endif$
-$for(header-includes)$
-$header-includes$
-$endfor$
 $for(styles)$
 	<style title="$styles.name$">
 $styles.css$
 	</style>
+$endfor$
+$for(header-includes)$
+$header-includes$
 $endfor$
 </head>
 <body>
