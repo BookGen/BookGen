@@ -36,12 +36,14 @@ $if(final)$
 $else$
 \DraftOn
 $endif$
+\providecommand{\beforefulltext}{}
+\providecommand{\afterfulltext}{}
 
 $for(header-includes)$
 $header-includes$
 $endfor$
 
-\begin{document}
+\begin{document}\beforefulltext
 
 % Titling page %
 $for(include-before)$

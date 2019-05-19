@@ -252,7 +252,7 @@ $(call allfiles,HTML,css,xhtml,$(basename $(BIBLIOGRAPHY))): $(FILEPREFIX)HTML/%
 
 buildtext = cd $(BUILDDIR)/$(call styles,$@) && $(LATEX) --jobname=$(call filenames,PDF,$(call styles,$@),pdf,$@) $(if $(VERBOSE),,--interaction=batchmode --halt-on-error) --file-line-error "\documentclass{style}\nofiles\usepackage{bookgen}$(if $(BIBLIOGRAPHY),\usepackage$(BIBREQUIRE)\addbibresource{bibliography.bib}\nocite{*},)\begin{document}$(if $(findstring $(call types,$(call srcs,$(call filenames,PDF,$(call styles,$@),pdf,$@))),chapter appendix),\mainmatter ,\frontmatter )$(if $(findstring $(call types,$(call srcs,$(call filenames,PDF,$(call styles,$@),pdf,$@))),appendix),\appendix )\makeatletter\@nameuse{cp@$(call filenames,PDF,$(call styles,$@),pdf,$@)@pre}\makeatother\input{$(call filenames,PDF,$(call styles,$@),pdf,$@)}\end{document}"
 
-buildfulltext = cd $(BUILDDIR)/$* && $(LATEX) --jobname=$(FULLTEXT) $(if $(VERBOSE),,--interaction=batchmode --halt-on-error) --file-line-error "\documentclass{style}\usepackage{Makefile}\usepackage{bookgen}$(if $(BIBLIOGRAPHY),\usepackage$(BIBREQUIRE)\addbibresource{bibliography.bib}\nocite{*},)\input{GO.xxx}\input{$(INDEX)}\end{document}"
+buildfulltext = cd $(BUILDDIR)/$* && $(LATEX) --jobname=$(FULLTEXT) $(if $(VERBOSE),,--interaction=batchmode --halt-on-error) --file-line-error "\documentclass{style}\usepackage{Makefile}\usepackage{bookgen}$(if $(BIBLIOGRAPHY),\usepackage$(BIBREQUIRE)\addbibresource{bibliography.bib}\nocite{*},)\input{GO.xxx}\input{$(INDEX)}\afterfulltext\end{document}"
 
 $(patsubst $(FILEPREFIX)%,%,$(call allfiles,$(BUILDDIR),cls,sty,Makefile)): $(srcdir)/DeluxeMakefile/Makefile.sty; $(link)
 $(patsubst $(FILEPREFIX)%,%,$(call allfiles,$(BUILDDIR),cls,sty,bookgen)): $(srcdir)/bookgen.sty; $(link)
