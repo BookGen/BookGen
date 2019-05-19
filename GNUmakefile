@@ -258,7 +258,7 @@ $(patsubst $(FILEPREFIX)%,%,$(call allfiles,$(BUILDDIR),cls,sty,Makefile)): $(sr
 $(patsubst $(FILEPREFIX)%,%,$(call allfiles,$(BUILDDIR),cls,sty,bookgen)): $(srcdir)/bookgen.sty; $(link)
 $(patsubst $(FILEPREFIX)%,%,$(call allfiles,$(BUILDDIR),cls,cls,style)): $(BUILDDIR)/%/style.cls: Styles/%.cls; $(link)
 $(patsubst $(FILEPREFIX)%,%,$(call allfiles,$(BUILDDIR),cls,bib,bibliography)): $(addsuffix .bib,$(basename $(BIBLIOGRAPHY))); $(link)
-$(patsubst $(FILEPREFIX)%,%,$(call alleverything,$(BUILDDIR),cls,tex,$(INDEX))): $$(call unstyledfiles,LaTeX,tex,$$(call filenames,$(BUILDDIR),$$(call styles,$$@),tex,$$@)); $(link)
+$(patsubst $(FILEPREFIX)%,%,$(call alleverything,$(BUILDDIR),cls,tex,$(INDEX))): $$(call unstyledfiles,LaTeX,tex,$$(call filenames,$(BUILDDIR),$$(call styles,$$@),tex,$(FILEPREFIX)$$@)); $(link)
 
 $(patsubst $(FILEPREFIX)%,%,$(call allfiles,$(BUILDDIR),cls,xxx,GO)): $(BUILDDIR)/%/GO.xxx: $(YAML) $(srcdir)/template.xxx
 	$(makefolders)
