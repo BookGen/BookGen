@@ -264,7 +264,7 @@ $(patsubst $(FILEPREFIX)%,%,$(call allfiles,$(BUILDDIR),cls,xxx,GO)): $(BUILDDIR
 	$(makefolders)
 	(echo "---"; cat $(YAML); echo "style: $*"; echo "...") | pandoc -f markdown -t latex --standalone --template "$(srcdir)/template.xxx" -o $@
 
-$(patsubst $(FILEPREFIX)%,%,$(call allfiles,$(BUILDDIR),cls,aux,$(FULLTEXT))): $(BUILDDIR)/%/$(FULLTEXT).aux: $$(call everything,$(BUILDDIR),$$*,tex,$(INDEX)) $(BUILDDIR)/%/Makefile.sty $(BUILDDIR)/%/bookgen.sty $(BUILDDIR)/%/GO.xxx $(BUILDDIR)/%/style.cls
+$(patsubst $(FILEPREFIX)%,%,$(call allfiles,$(BUILDDIR),cls,aux,$(FULLTEXT))): $(BUILDDIR)/%/$(FULLTEXT).aux: $(BUILDDIR)/%/$(INDEX).tex $(BUILDDIR)/%/Makefile.sty $(BUILDDIR)/%/bookgen.sty $(BUILDDIR)/%/GO.xxx $(BUILDDIR)/%/style.cls
 	$(makefolders)
 	$(buildfulltext)
 
