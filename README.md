@@ -139,6 +139,7 @@ The metadata provided in `info.yml` can customize the compiled result. The ava
 + `author` : The author of the work ( plaintext only )
 + `publisher` : The publisher of the work ( plaintext only )
 + `description` : A description of the work ( plaintext only )
++ `homepage` : The homepage for the work ( as a URL )
 + `year` : The copyright year( s ) of the work
 + `rights` : The ( short ) rights or license statement associated with the work
 + `details` : Detailed information regarding the licensing or publication of the work ; this can contain paragraph content
