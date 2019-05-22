@@ -200,7 +200,7 @@ endef
 # We do not want to set the chapter for standalone documents.
 chapteryaml = $(if $(findstring $(call types,$<),chapter appendix),echo "chapter: $(call names,$<)";,)
 
-fileyaml = echo "name: $(call names,$<)"; $(chapteryaml) $(if $(DRAFTS),echo "draft: $(basename $(notdir $(wildcard $(DRAFTS)/$(call standalonenames,$<)/*.md)))";,) echo "type: $(call types,$<)"
+fileyaml = echo "name: $(call names,$<)"; $(chapteryaml) $(if $(DRAFTS),echo "draft: $(basename $(notdir $(lastword $(sort $(wildcard $(DRAFTS)/$(call standalonenames,$<)/*.md)))))";,) echo "type: $(call types,$<)"
 
 # Empty YAML if no file exists.
 $(YAML):
