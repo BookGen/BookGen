@@ -89,7 +89,7 @@ endef
 define makezip
 $(call makefolders,$@)
 rm -f $@
-cd $(FILEPREFIX)$(firstword $(subst /, ,$(patsubst $(FILEPREFIX)%,%,$(firstword $(or $(1),$^))))); zip -MM -9DX$(if $(VERBOSE),v,q)r ../$(patsubst $(FILEPREFIX)%,%,$(basename $@)) $(patsubst $(FILEPREFIX)$(firstword $(subst /, ,$(patsubst $(FILEPREFIX)%,%,$(firstword $(or $(1),$^)))))/%,%,$(or $(1),$^))
+$(if $(or $(1),$^),cd $(FILEPREFIX)$(firstword $(subst /, ,$(patsubst $(FILEPREFIX)%,%,$(firstword $(or $(1),$^))))); zip -MM -9DX$(if $(VERBOSE),v,q)r ../$(patsubst $(FILEPREFIX)%,%,$(basename $@)) $(patsubst $(FILEPREFIX)$(firstword $(subst /, ,$(patsubst $(FILEPREFIX)%,%,$(firstword $(or $(1),$^)))))/%,%,$(or $(1),$^)),)
 @echo "Zip generated at $@"
 endef
 
