@@ -85,7 +85,7 @@ def action(elem, doc):
 			if len(elem.content) == 1 and isinstance(elem.content[0], Para):
 				return [
 					RawBlock('\\chapterprecishere{', format='latex'),
-					Div(*elem.content[0].content),
+					Para(*elem.content[0].content),
 					RawBlock('}', format='latex')
 				]
 			return [
