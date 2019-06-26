@@ -22,46 +22,55 @@ CHAPTERPREFIX := Chapters/
 APPENDIXPREFIX := $(CHAPTERPREFIX)A
 BIBLIOGRAPHY :=
 BIBREQUIRE := [notes,annotation]{biblatex-chicago}
-BUILDDIR := Build
+BUILD := Build
 DRAFTS :=
-FULLTEXT := text
-INDEX := index
-LATEX := xelatex
 FILEPREFIX :=
+FULLTEXT := text
+HTML := HTML
+INDEX := index
+LATEX := LaTeX
+MARKDOWN := Markdown
+PDF := PDF
+PNG := PNG
 STYLE :=
+STYLES := Styles
+TEX := xelatex
 YAML := info.yml
+ZIP := Zip
 
 # BASIC RULES #
 
 all everything: md xhtml tex pdf png;
-htm html html5 xht xhtml5 xml: xhtml;
-latex: tex;
-markdown: md;
-dist: zip;
-clean: ; rm -rf $(BUILDDIR)
-unclean: ; rm -rf $(if $(DRAFTS),$(FILEPREFIX)Markdown,) $(FILEPREFIX)LaTeX $(FILEPREFIX)HTML $(FILEPREFIX)PDF $(FILEPREFIX)PNG $(FILEPREFIX)Zip
+htm html html5 xht xhtml5 xml $(HTML): xhtml;
+latex $(LATEX): tex;
+markdown $(MARKDOWN): md;
+$(PDF): pdf;
+$(PNG): png
+dist $(ZIP): zip;
+clean: ; rm -rf $(BUILD)
+unclean: ; rm -rf $(if $(DRAFTS),$(FILEPREFIX)$(MARKDOWN),) $(FILEPREFIX)$(LATEX) $(FILEPREFIX)$(HTML) $(FILEPREFIX)$(PDF) $(FILEPREFIX)$(PNG) $(FILEPREFIX)$(ZIP)
 clobber distclean gone: clean unclean;
 zip: ;
-.PHONY: all everything htm html html5 xht xhtml5 xml latex markdown dist clean unclean clobber distclean gone zip;
+.PHONY: all everything htm html html5 xht xhtml5 xml $(HTML) latex $(LATEX) markdown $(MARKDOWN) $(PDF) $(PNG) dist $(ZIP) clean unclean clobber distclean gone zip;
 .SUFFIXES: ;
 .SECONDEXPANSION: ;
 
 # SOURCE FILES AND NAMES #
 
-chapternames = $(patsubst $(FILEPREFIX)Markdown/$(CHAPTERPREFIX)%.md,%,$(1))
-appendixnames = $(patsubst $(FILEPREFIX)Markdown/$(APPENDIXPREFIX)%.md,%,$(1))
-standalonenames = $(patsubst $(FILEPREFIX)Markdown/%.md,%,$(1))
+chapternames = $(patsubst $(FILEPREFIX)$(MARKDOWN)/$(CHAPTERPREFIX)%.md,%,$(1))
+appendixnames = $(patsubst $(FILEPREFIX)$(MARKDOWN)/$(APPENDIXPREFIX)%.md,%,$(1))
+standalonenames = $(patsubst $(FILEPREFIX)$(MARKDOWN)/%.md,%,$(1))
 
-srcs = $(patsubst %,$(FILEPREFIX)Markdown/%.md,$(1))
+srcs = $(patsubst %,$(FILEPREFIX)$(MARKDOWN)/%.md,$(1))
 
 ifdef DRAFTS
-chaptersrcs := $(sort $(patsubst $(DRAFTS)/%/,$(FILEPREFIX)Markdown/%.md,$(dir $(wildcard $(DRAFTS)/$(CHAPTERPREFIX)[0-9][0-9]/*.md))))
-appendixsrcs := $(sort $(patsubst $(DRAFTS)/%/,$(FILEPREFIX)Markdown/%.md,$(dir $(wildcard $(DRAFTS)/$(APPENDIXPREFIX)[0-9][0-9]/*.md))))
-standalonesrcs := $(sort $(filter-out $(chaptersrcs) $(appendixsrcs),$(patsubst $(DRAFTS)/%/,$(FILEPREFIX)Markdown/%.md,$(dir $(wildcard $(DRAFTS)/*/*.md)))))
+chaptersrcs := $(sort $(patsubst $(DRAFTS)/%/,$(FILEPREFIX)$(MARKDOWN)/%.md,$(dir $(wildcard $(DRAFTS)/$(CHAPTERPREFIX)[0-9][0-9]/*.md))))
+appendixsrcs := $(sort $(patsubst $(DRAFTS)/%/,$(FILEPREFIX)$(MARKDOWN)/%.md,$(dir $(wildcard $(DRAFTS)/$(APPENDIXPREFIX)[0-9][0-9]/*.md))))
+standalonesrcs := $(sort $(filter-out $(chaptersrcs) $(appendixsrcs),$(patsubst $(DRAFTS)/%/,$(FILEPREFIX)$(MARKDOWN)/%.md,$(dir $(wildcard $(DRAFTS)/*/*.md)))))
 else
-chaptersrcs := $(sort $(wildcard $(FILEPREFIX)Markdown/$(CHAPTERPREFIX)[0-9][0-9].md))
-appendixsrcs := $(sort $(wildcard $(FILEPREFIX)Markdown/$(APPENDIXPREFIX)[0-9][0-9].md))
-standalonesrcs := $(sort $(filter-out $(chaptersrcs) $(appendixsrcs),$(wildcard $(FILEPREFIX)Markdown/*.md)))
+chaptersrcs := $(sort $(wildcard $(FILEPREFIX)$(MARKDOWN)/$(CHAPTERPREFIX)[0-9][0-9].md))
+appendixsrcs := $(sort $(wildcard $(FILEPREFIX)$(MARKDOWN)/$(APPENDIXPREFIX)[0-9][0-9].md))
+standalonesrcs := $(sort $(filter-out $(chaptersrcs) $(appendixsrcs),$(wildcard $(FILEPREFIX)$(MARKDOWN)/*.md)))
 endif
 allsrcs := $(standalonesrcs) $(chaptersrcs) $(appendixsrcs)
 
@@ -95,11 +104,11 @@ endef
 
 # STYLES AND FILES #
 
-stylesrcs = $(sort $(wildcard Styles/*.$(1)))
+stylesrcs = $(sort $(wildcard $(STYLES)/*.$(1)))
 ifdef STYLE
-stylenames = $(filter $(STYLE),$(patsubst Styles/%.$(1),%,$(call stylesrcs,$(1))))
+stylenames = $(filter $(STYLE),$(patsubst $(STYLES)/%.$(1),%,$(call stylesrcs,$(1))))
 else # If no styles are specified, use all of them.
-stylenames = $(patsubst Styles/%.$(1),%,$(call stylesrcs,$(1)))
+stylenames = $(patsubst $(STYLES)/%.$(1),%,$(call stylesrcs,$(1)))
 endif
 
 styles = $(foreach file,$(1),$(word 2,$(subst /, ,$(patsubst $(FILEPREFIX)%,%,$(1)))))
@@ -124,9 +133,9 @@ allappendixes = $(call allfiles,$(1),$(2),$(3),$(addprefix $(APPENDIXPREFIX),$(a
 allstandalones = $(call allfiles,$(1),$(2),$(3),$(allstandalonenames))
 alleverything = $(call allfiles,$(1),$(2),$(3),$(4) $(allnames))
 
-stylezip = $(FILEPREFIX)Zip/$(1)/Styles/$(2).zip
+stylezip = $(FILEPREFIX)$(ZIP)/$(1)/$(STYLES)/$(2).zip
 
-allfilezips = $(patsubst %,$(FILEPREFIX)Zip/$(1)/%.zip,$(4) $(allnames))
+allfilezips = $(patsubst %,$(FILEPREFIX)$(ZIP)/$(1)/%.zip,$(4) $(allnames))
 allstylezips = $(foreach style,$(call stylenames,$(2)),$(call stylezip,$(1),$(style)))
 
 # UNSTYLED FILES #
@@ -144,7 +153,7 @@ unstyledeverything = $(call unstyledfiles,$(1),$(2),$(allnames) $(3))
 
 unstylednames = $(if $(findstring /,$(3)),$(patsubst $(FILEPREFIX)$(1)/%/$(notdir $(2)),%,$(3)),$(patsubst $(FILEPREFIX)$(1)/%.$(2),%,$(3)))
 
-unstyledzip = $(FILEPREFIX)Zip/$(1).zip
+unstyledzip = $(FILEPREFIX)$(ZIP)/$(1).zip
 
 # COMMON TARGETS #
 # For use with $(eval).
@@ -161,12 +170,12 @@ $$(call stylenames,$(2)):: $$(if $$(NOARCHIVE),$$$$(call everything,$(1),$$$$@,$
 endef
 
 define targetstylezips
-$$(call allstylezips,$(1),$(2)): $(FILEPREFIX)Zip/$(1)/Styles/%.zip: $$$$(call everything,$(1),$$$$*,$(3),$(4)); $(if $(findstring /,$(3)),$$(call makezip,$$(call everything,$(1),$$*,/*,$(4))),$$(makezip))
+$$(call allstylezips,$(1),$(2)): $(FILEPREFIX)$(ZIP)/$(1)/$(STYLES)/%.zip: $$$$(call everything,$(1),$$$$*,$(3),$(4)); $(if $(findstring /,$(3)),$$(call makezip,$$(call everything,$(1),$$*,/*,$(4))),$$(makezip))
 zip: $$(call allstylezips,$(1),$(2))
 endef
 
 define targetfilezips
-$$(call allfilezips,$(1),$(2),$(3),$(4)): $(FILEPREFIX)Zip/$(1)/%.zip: $$$$(call allfiles,$(1),$(2),$(3),$$$$*); $(if $(findstring /,$(3)),$$(call makezip,$$(call allfiles,$(1),$(2),/*,$$*)),$$(makezip))
+$$(call allfilezips,$(1),$(2),$(3),$(4)): $(FILEPREFIX)$(ZIP)/$(1)/%.zip: $$$$(call allfiles,$(1),$(2),$(3),$$$$*); $(if $(findstring /,$(3)),$$(call makezip,$$(call allfiles,$(1),$(2),/*,$$*)),$$(makezip))
 zip: $$(call allfilezips,$(1),$(2),$(3),$(4))
 endef
 
@@ -208,23 +217,23 @@ $(YAML):
 
 # Markdown #
 
-$(eval $(call unstyledtargets,Markdown,md))
+$(eval $(call unstyledtargets,$(MARKDOWN),md))
 
 ifdef DRAFTS
 # This rule is just for symlink creation in the case that a `DRAFTS` override has been set.
-$(allsrcs): $(FILEPREFIX)Markdown/%.md: $$(lastword $$(sort $$(wildcard $(DRAFTS)/$$*/*.md))); $(link)
+$(allsrcs): $(FILEPREFIX)$(MARKDOWN)/%.md: $$(lastword $$(sort $$(wildcard $(DRAFTS)/$$*/*.md))); $(link)
 endif
 
 # LaTeX #
 
-$(eval $(call unstyledtargets,LaTeX,tex,$(INDEX)))
+$(eval $(call unstyledtargets,$(LATEX),tex,$(INDEX)))
 
-$(call unstyledeverything,LaTeX,tex): $(FILEPREFIX)LaTeX/%.tex: $$(call srcs,$$*) $(YAML) $(srcdir)/pandoc-latex.py $(srcdir)/template.tex
+$(call unstyledeverything,$(LATEX),tex): $(FILEPREFIX)$(LATEX)/%.tex: $$(call srcs,$$*) $(YAML) $(srcdir)/pandoc-latex.py $(srcdir)/template.tex
 	$(makefolders)
 	(cat $<; echo; echo; echo "---"; cat $(YAML); $(fileyaml); echo "...") | pandoc -f markdown-smart -t latex-smart --standalone --template "$(srcdir)/template.tex" --filter "$(srcdir)/pandoc-latex.py" -o $@ --top-level-division=chapter $(if $(BIBLIOGRAPHY),--biblatex,)
 	@echo "LaTeX file for $< generated at $@"
 
-$(FILEPREFIX)LaTeX/$(INDEX).tex: $$(call unstyledeverything,LaTeX,tex) $(YAML) $(srcdir)/pandoc-latex.py
+$(FILEPREFIX)$(LATEX)/$(INDEX).tex: $$(call unstyledeverything,LaTeX,tex) $(YAML) $(srcdir)/pandoc-latex.py
 	$(makefolders)
 	(echo "---"; cat $(YAML); echo "name: $(INDEX)"; echo "type: index"; echo "...") | pandoc -f markdown-smart -t latex-smart --standalone --template "$(srcdir)/template.tex" --filter "$(srcdir)/pandoc-latex.py" -o $@ --top-level-division=chapter $(if $(BIBLIOGRAPHY),--biblatex,)
 	(echo "\\\\frontmatter"; $(foreach standalone,$(allstandalonenames),echo "\\\\include{$(standalone)}";) echo "\\\\cleardoublepage\\\\tableofcontents"; echo; echo "\\\\clearpage\\\\null\\\\thispagestyle{cleared}\\\\cleartooddpage[\null\thispagestyle{cleared}]\\\\mainmatter"; echo; $(foreach chapter,$(allchapternames),echo "\\\\include{$(CHAPTERPREFIX)$(chapter)}";) echo; $(if $(allappendixnames),echo "\\\\clearpage\\\\null\\\\thispagestyle{cleared}\\\\cleartooddpage[\null\thispagestyle{cleared}]\\\\appendix\\\\appendixpage"; $(foreach appendix,$(allappendixnames),echo "\\\\include{$(APPENDIXPREFIX)$(appendix)}";) echo;,) echo "\\\\clearpage$(if $(BIBLIOGRAPHY),\\\\null\\\\thispagestyle{cleared}\\\\cleartooddpage[\null\thispagestyle{cleared}]\\\\backmatter\\\\printbibliography,)") >> $@
@@ -232,67 +241,67 @@ $(FILEPREFIX)LaTeX/$(INDEX).tex: $$(call unstyledeverything,LaTeX,tex) $(YAML) $
 
 # HTML #
 
-$(eval $(call targets,HTML,css,xhtml,$(INDEX) $(basename $(BIBLIOGRAPHY))))
+$(eval $(call targets,$(HTML),css,xhtml,$(INDEX) $(basename $(BIBLIOGRAPHY))))
 
-$(call alleverything,HTML,css,xhtml): $$(call srcs,$$(call filenames,HTML,$$(call styles,$$@),xhtml,$$@)) $(YAML) $(srcdir)/pandoc-html.py $(srcdir)/template.xhtml Styles/$$(call styles,$$@).css
+$(call alleverything,$(HTML),css,xhtml): $$(call srcs,$$(call filenames,$(HTML),$$(call styles,$$@),xhtml,$$@)) $(YAML) $(srcdir)/pandoc-html.py $(srcdir)/template.xhtml Styles/$$(call styles,$$@).css
 	$(makefolders)
 	(cat $<; echo; echo; echo "---"; echo "suppress-bibliography: true"; $(if $(BIBLIOGRAPHY),echo "bibliography: $(addsuffix .bib,$(basename $(BIBLIOGRAPHY)))"; echo "citation-style: '$(realpath $(srcdir)/chicago-note-bibliography-16th-edition.csl)'";,) echo "styles:"; echo "- name: $(call styles,$@)"; echo "  css: |"; echo '    ```{=html}'; cat Styles/$(call styles,$@).css | sed 's/^/    /'; echo '    ```'; $(if $(ALLSTYLES),$(foreach style,$(filter-out $(call styles,$@),$(stylenames)),echo "- name: $(style)"; echo "  css: |"; echo '    ```{=html}'; cat Styles/$(style).css | sed 's/^/    /'; echo '    ```';)) cat $(YAML); $(fileyaml); $(if $(findstring $(call types,$<),appendix),echo "appendix: true";,) echo "...") | pandoc -f markdown-smart -t html5-smart --standalone --template "$(srcdir)/template.xhtml" --filter "$(srcdir)/pandoc-html.py" $(if $(BIBLIOGRAPHY),--filter pandoc-citeproc,) -o $@ --self-contained --section-divs --mathml
 	@echo "$(call styles,$@) HTML file for $< generated at $@"
 
-$(call allfiles,HTML,css,xhtml,$(INDEX)): $(FILEPREFIX)HTML/%/$(INDEX).xhtml: $(YAML) $(srcdir)/template.xhtml Styles/%.css
+$(call allfiles,$(HTML),css,xhtml,$(INDEX)): $(FILEPREFIX)$(HTML)/%/$(INDEX).xhtml: $(YAML) $(srcdir)/template.xhtml Styles/%.css
 	$(makefolders)
 	(echo '```{=html}'; echo '<ol>'; $(foreach standalone,$(allstandalonenames),echo '  <li><a href="$(call returntoroot,$(INDEX).xhtml)$(standalone).xhtml">$(standalone)</a></li>';) echo '  <li><a href="$(call returntoroot,$(INDEX).xhtml)$(INDEX).xhtml">Contents</a></li>'; $(if $(allchapternames),echo '<li><span>Chapters</span><ol>'; $(foreach chapter,$(allchapternames),echo '  <li><a href="$(call returntoroot,$(INDEX).xhtml)$(subst ",&quot;,$(CHAPTERPREFIX))$(chapter).xhtml">Chapter $(chapter)</a></li>';) echo '</ol></li>';,) $(if $(allappendixnames),echo '<li><span>Appendices</span><ol>'; $(foreach appendix,$(allappendixnames), echo '  <li><a href="$(call returntoroot,$(INDEX).xhtml)$(subst ",&quot;,$(APPENDIXPREFIX))$(appendix).xhtml">Appendix $(appendix)</a></li>';) echo '</ol></li>';,) $(if $(BIBLIOGRAPHY),echo '<li><a href="$(call returntoroot,$(INDEX).xhtml)$(basename $(BIBLIOGRAPHY)).xhtml">Bibliography</a></li>';,) echo '</ol>'; echo '```'; echo; echo "---"; echo "styles:"; echo "- name: $(call styles,$@)"; echo "  css: |"; echo '    ```{=html}'; cat Styles/$*.css | sed 's/^/    /'; echo '    ```'; $(if $(ALLSTYLES),$(foreach style,$(filter-out $*,$(stylenames)),echo "- name: $(style)"; echo "  css: |"; echo '    ```{=html}'; cat Styles/$*.css | sed 's/^/    /'; echo '    ```';)) cat $(YAML); echo "...") | pandoc -f markdown-smart -t html5-smart --standalone --template "$(srcdir)/template-index.xhtml" --filter "$(srcdir)/pandoc-html.py" $(if $(BIBLIOGRAPHY),--filter pandoc-citeproc,) -o $@ --self-contained
 	@echo "$* HTML index generated at $@"
 
-$(call allfiles,HTML,css,xhtml,$(basename $(BIBLIOGRAPHY))): $(FILEPREFIX)HTML/%/$(basename $(BIBLIOGRAPHY)).xhtml: $(BIBLIOGRAPHY) Styles/%.css
+$(call allfiles,$(HTML),css,xhtml,$(basename $(BIBLIOGRAPHY))): $(FILEPREFIX)$(HTML)/%/$(basename $(BIBLIOGRAPHY)).xhtml: $(BIBLIOGRAPHY) Styles/%.css
 	$(makefolders)
 	(echo "---"; echo "bibliography: $(addsuffix .bib,$(basename $(BIBLIOGRAPHY)))"; echo "citation-style: '$(realpath $(srcdir)/chicago-note-bibliography-16th-edition.csl)'"; echo "styles:"; echo "- name: $(call styles,$@)"; echo "  css: |"; echo '    ```{=html}'; cat Styles/$(call styles,$@).css | sed 's/^/    /'; echo '    ```'; $(if $(ALLSTYLES),$(foreach style,$(filter-out $(call styles,$@),$(stylenames)),echo "- name: $(style)"; echo "  css: |"; echo '    ```{=html}'; cat Styles/$(style).css | sed 's/^/    /'; echo '    ```';)) cat $(YAML); echo "name: bibliography"; echo "type: bibliography"; echo "nocite: '@*'"; echo "..."; echo "$(octothorpe) Bibliography") | pandoc -f markdown-smart -t html5-smart --standalone --template "$(srcdir)/template.xhtml" --filter "$(srcdir)/pandoc-html.py" --filter pandoc-citeproc -o $@ --self-contained --section-divs --mathml
 
 # PDF BUILDFILES #
 
-buildtext = cd $(BUILDDIR)/$(call styles,$@) && $(LATEX) --jobname=$(call filenames,PDF,$(call styles,$@),pdf,$@) $(if $(VERBOSE),,--interaction=batchmode --halt-on-error) --file-line-error "\documentclass{style}\nofiles\usepackage{bookgen}$(if $(BIBLIOGRAPHY),\usepackage$(BIBREQUIRE)\addbibresource{bibliography.bib}\nocite{*},)\begin{document}$(if $(findstring $(call types,$(call srcs,$(call filenames,PDF,$(call styles,$@),pdf,$@))),chapter appendix),\mainmatter ,\frontmatter )$(if $(findstring $(call types,$(call srcs,$(call filenames,PDF,$(call styles,$@),pdf,$@))),appendix),\appendix )\makeatletter\@nameuse{cp@$(call filenames,PDF,$(call styles,$@),pdf,$@)@pre}\makeatother\input{$(call filenames,PDF,$(call styles,$@),pdf,$@)}\end{document}"
+buildtext = cd $(BUILD)/$(call styles,$@) && $(TEX) --jobname=$(call filenames,PDF,$(call styles,$@),pdf,$@) $(if $(VERBOSE),,--interaction=batchmode --halt-on-error) --file-line-error "\documentclass{style}\nofiles\usepackage{bookgen}$(if $(BIBLIOGRAPHY),\usepackage$(BIBREQUIRE)\addbibresource{bibliography.bib}\nocite{*},)\begin{document}$(if $(findstring $(call types,$(call srcs,$(call filenames,PDF,$(call styles,$@),pdf,$@))),chapter appendix),\mainmatter ,\frontmatter )$(if $(findstring $(call types,$(call srcs,$(call filenames,PDF,$(call styles,$@),pdf,$@))),appendix),\appendix )\makeatletter\@nameuse{cp@$(call filenames,PDF,$(call styles,$@),pdf,$@)@pre}\makeatother\input{$(call filenames,PDF,$(call styles,$@),pdf,$@)}\end{document}"
 
-buildfulltext = cd $(BUILDDIR)/$* && $(LATEX) --jobname=$(FULLTEXT) $(if $(VERBOSE),,--interaction=batchmode --halt-on-error) --file-line-error "\documentclass{style}\usepackage{Makefile}\usepackage{bookgen}$(if $(BIBLIOGRAPHY),\usepackage$(BIBREQUIRE)\addbibresource{bibliography.bib}\nocite{*},)\input{GO.xxx}\input{$(INDEX)}\afterfulltext\end{document}"
+buildfulltext = cd $(BUILD)/$* && $(TEX) --jobname=$(FULLTEXT) $(if $(VERBOSE),,--interaction=batchmode --halt-on-error) --file-line-error "\documentclass{style}\usepackage{Makefile}\usepackage{bookgen}$(if $(BIBLIOGRAPHY),\usepackage$(BIBREQUIRE)\addbibresource{bibliography.bib}\nocite{*},)\input{GO.xxx}\input{$(INDEX)}\afterfulltext\end{document}"
 
-$(patsubst $(FILEPREFIX)%,%,$(call allfiles,$(BUILDDIR),cls,sty,Makefile)): $(srcdir)/DeluxeMakefile/Makefile.sty; $(link)
-$(patsubst $(FILEPREFIX)%,%,$(call allfiles,$(BUILDDIR),cls,sty,bookgen)): $(srcdir)/bookgen.sty; $(link)
-$(patsubst $(FILEPREFIX)%,%,$(call allfiles,$(BUILDDIR),cls,cls,style)): $(BUILDDIR)/%/style.cls: Styles/%.cls; $(link)
-$(patsubst $(FILEPREFIX)%,%,$(call allfiles,$(BUILDDIR),cls,bib,bibliography)): $(addsuffix .bib,$(basename $(BIBLIOGRAPHY))); $(link)
-$(patsubst $(FILEPREFIX)%,%,$(call alleverything,$(BUILDDIR),cls,tex,$(INDEX))): $$(call unstyledfiles,LaTeX,tex,$$(call filenames,$(BUILDDIR),$$(call styles,$(FILEPREFIX)$$@),tex,$(FILEPREFIX)$$@)); $(link)
+$(patsubst $(FILEPREFIX)%,%,$(call allfiles,$(BUILD),cls,sty,Makefile)): $(srcdir)/DeluxeMakefile/Makefile.sty; $(link)
+$(patsubst $(FILEPREFIX)%,%,$(call allfiles,$(BUILD),cls,sty,bookgen)): $(srcdir)/bookgen.sty; $(link)
+$(patsubst $(FILEPREFIX)%,%,$(call allfiles,$(BUILD),cls,cls,style)): $(BUILD)/%/style.cls: Styles/%.cls; $(link)
+$(patsubst $(FILEPREFIX)%,%,$(call allfiles,$(BUILD),cls,bib,bibliography)): $(addsuffix .bib,$(basename $(BIBLIOGRAPHY))); $(link)
+$(patsubst $(FILEPREFIX)%,%,$(call alleverything,$(BUILD),cls,tex,$(INDEX))): $$(call unstyledfiles,LaTeX,tex,$$(call filenames,$(BUILD),$$(call styles,$(FILEPREFIX)$$@),tex,$(FILEPREFIX)$$@)); $(link)
 
-$(patsubst $(FILEPREFIX)%,%,$(call allfiles,$(BUILDDIR),cls,xxx,GO)): $(BUILDDIR)/%/GO.xxx: $(YAML) $(srcdir)/template.xxx
+$(patsubst $(FILEPREFIX)%,%,$(call allfiles,$(BUILD),cls,xxx,GO)): $(BUILD)/%/GO.xxx: $(YAML) $(srcdir)/template.xxx
 	$(makefolders)
 	(echo "---"; cat $(YAML); echo "style: $*"; echo "...") | pandoc -f markdown -t latex --standalone --template "$(srcdir)/template.xxx" -o $@
 
-$(patsubst $(FILEPREFIX)%,%,$(call allfiles,$(BUILDDIR),cls,aux,$(FULLTEXT))): $(BUILDDIR)/%/$(FULLTEXT).aux: $(patsubst $(FILEPREFIX)%,%,$(call alleverything,$(BUILDDIR),cls,tex,$(INDEX))) $(BUILDDIR)/%/Makefile.sty $(BUILDDIR)/%/bookgen.sty $(BUILDDIR)/%/GO.xxx $(BUILDDIR)/%/style.cls
+$(patsubst $(FILEPREFIX)%,%,$(call allfiles,$(BUILD),cls,aux,$(FULLTEXT))): $(BUILD)/%/$(FULLTEXT).aux: $(patsubst $(FILEPREFIX)%,%,$(call alleverything,$(BUILD),cls,tex,$(INDEX))) $(BUILD)/%/Makefile.sty $(BUILD)/%/bookgen.sty $(BUILD)/%/GO.xxx $(BUILD)/%/style.cls
 	$(makefolders)
 	$(buildfulltext)
 
-$(patsubst $(FILEPREFIX)%,%,$(call allfiles,$(BUILDDIR),cls,bbl,$(FULLTEXT))): $(BUILDDIR)/%/$(FULLTEXT).bbl: $(BUILDDIR)/%/bibliography.bib | $(BUILDDIR)/%/$(FULLTEXT).aux
-	cd $(BUILDDIR)/$* && biber $(if $(VERBOSE),,--onlylog) $(FULLTEXT)
+$(patsubst $(FILEPREFIX)%,%,$(call allfiles,$(BUILD),cls,bbl,$(FULLTEXT))): $(BUILD)/%/$(FULLTEXT).bbl: $(BUILD)/%/bibliography.bib | $(BUILD)/%/$(FULLTEXT).aux
+	cd $(BUILD)/$* && biber $(if $(VERBOSE),,--onlylog) $(FULLTEXT)
 
 # PDF #
 
-$(eval $(call targets,PDF,cls,pdf,$(FULLTEXT)))
+$(eval $(call targets,$(PDF),cls,pdf,$(FULLTEXT)))
 
-$(call alleverything,PDF,cls,pdf): $(FILEPREFIX)PDF/$$(call styles,$$@)/$(FULLTEXT).pdf
+$(call alleverything,$(PDF),cls,pdf): $(FILEPREFIX)$(PDF)/$$(call styles,$$@)/$(FULLTEXT).pdf
 	$(makefolders)
 	$(buildtext)
-	$(if $(VECTORIZE),gs -dNoOutputFonts -sDEVICE=pdfwrite $(if $(VERBOSE),,-dQUIET) -o $@ $(BUILDDIR)/$(call styles,$@)/$(call filenames,PDF,$(call styles,$@),pdf,$@).pdf,mv -f $(BUILDDIR)/$(call styles,$@)/$(call filenames,PDF,$(call styles,$@),pdf,$@).pdf $@)
-	@echo "$(call styles,$@) PDF for $(call srcs,$(call filenames,PDF,$(call styles,$@),pdf,$@)) generated at $@"
+	$(if $(VECTORIZE),gs -dNoOutputFonts -sDEVICE=pdfwrite $(if $(VERBOSE),,-dQUIET) -o $@ $(BUILD)/$(call styles,$@)/$(call filenames,$(PDF),$(call styles,$@),pdf,$@).pdf,mv -f $(BUILD)/$(call styles,$@)/$(call filenames,$(PDF),$(call styles,$@),pdf,$@).pdf $@)
+	@echo "$(call styles,$@) PDF for $(call srcs,$(call filenames,$(PDF),$(call styles,$@),pdf,$@)) generated at $@"
 
-$(call allfiles,PDF,cls,pdf,$(FULLTEXT)): $(FILEPREFIX)PDF/%/$(FULLTEXT).pdf: $(BUILDDIR)/%/$(FULLTEXT).aux $(if $(BIBLIOGRAPHY),$(BUILDDIR)/%/$(FULLTEXT).bbl,)
+$(call allfiles,$(PDF),cls,pdf,$(FULLTEXT)): $(FILEPREFIX)$(PDF)/%/$(FULLTEXT).pdf: $(BUILD)/%/$(FULLTEXT).aux $(if $(BIBLIOGRAPHY),$(BUILD)/%/$(FULLTEXT).bbl,)
 	$(makefolders)
 	$(buildfulltext)
-	$(if $(VECTORIZE),gs -dNoOutputFonts -sDEVICE=pdfwrite $(if $(VERBOSE),,-dQUIET) -o $@ $(BUILDDIR)/$*/$(FULLTEXT).pdf,mv -f $(BUILDDIR)/$*/$(FULLTEXT).pdf $@)
+	$(if $(VECTORIZE),gs -dNoOutputFonts -sDEVICE=pdfwrite $(if $(VERBOSE),,-dQUIET) -o $@ $(BUILD)/$*/$(FULLTEXT).pdf,mv -f $(BUILD)/$*/$(FULLTEXT).pdf $@)
 	@echo "$* fulltext PDF generated at $@"
 
 # PNGs #
 
-$(eval $(call targets,PNG,cls,png/index.html,$(FULLTEXT)))
+$(eval $(call targets,$(PNG),cls,png/index.html,$(FULLTEXT)))
 
-$(call alleverything,PNG,cls,png/index.html,$(FULLTEXT)): $(FILEPREFIX)PNG/%/index.html: $(FILEPREFIX)PDF/%.pdf $(srcdir)/StoryTime/index.html
+$(call alleverything,$(PNG),cls,png/index.html,$(FULLTEXT)): $(FILEPREFIX)$(PNG)/%/index.html: $(FILEPREFIX)$(PDF)/%.pdf $(srcdir)/StoryTime/index.html
 	$(makefolders)
 	cp "$(srcdir)/StoryTime/index.html" $@
 	magick -density 144 $< -quality 100 -colorspace RGB -alpha remove $(dir $@)Page_%d.png; ((( m=0 )); for page in $(dir $@)/*.png; do echo; echo Page_$$m.png | tr '\n' ' '; (( m++ )); pdftotext -f $$m -l $$m -enc UTF-8 -eol unix -nopgbrk -raw $< - | awk '{gsub(/-\n/, ""); print}' | tr '\n' ' ' | tr -s ' '; done; echo) >> $@
-	@echo $(if $(findstring $(FILEPREFIX)PNG/$(call styles,$@)/$(FULLTEXT)/index.html,$@),"$(call styles,$@) fulltext PNGs generated at $(dir $@)","$(call styles,$@) PNGs for $(call srcs,$(call filenames,PNG,$(call styles,$@),/index.html,$@)) generated at $(dir $@)")
+	@echo $(if $(findstring $(FILEPREFIX)$(PNG)/$(call styles,$@)/$(FULLTEXT)/index.html,$@),"$(call styles,$@) fulltext PNGs generated at $(dir $@)","$(call styles,$@) PNGs for $(call srcs,$(call filenames,$(PNG),$(call styles,$@),/index.html,$@)) generated at $(dir $@)")

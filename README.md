@@ -254,7 +254,7 @@ There are a number of `⟨ overrides ⟩` which can be used to further confi
 
 + `BIBREQUIRE` : The arguments to `\RequirePackage`/`\usepackage` for the proper bibliography package to use in LaTeX. Defaults to `[notes,annotation]{biblatex-chicago}`.
 
-+ `BUILDDIR` : The directory in which to place LaTeX build files. Defaults to `Build`.
++ `BUILD` : The directory in which to place LaTeX build files. Defaults to `Build`.
 
 + `CHAPTERPREFIX` : The prefix for non­‑appendix chapters. Defaults to `Chapters/`. Must not contain colons or spaces.
 
@@ -264,15 +264,29 @@ There are a number of `⟨ overrides ⟩` which can be used to further confi
 
 + `FULLTEXT` : The name to use for the fulltext PDF/PNG file( s ). Defaults to `text`. Naturally, it will cause problems if you have a source file with the same name as this file.
 
++ `HTML` : The directory in which to place HTML files. Defaults to `HTML`.
+
 + `INDEX` : The name to use for outputted index files. Defaults to `$(CHAPTERPREFIX)index`. Naturally, it will cause problems if you have a source file with the same name as this file.
 
-+ `LATEX` : The LaTeX compiler to use. Defaults to `xelatex`.
++ `LATEX` : The directory in which to place LaTeX files. Defaults to `LaTeX`.
+
++ `MARKDOWN` : The directory in which to find/place Markdown files. Defaults to `Markdown`.
+
++ `PDF` : The directory in which to place PDF files. Defaults to `PDF`.
+
++ `PNG` : The directory in which to place LaTeX files. Defaults to `PNG`.
 
 + `FILEPREFIX` : A prefix to prepend to the `Markdown`, `LaTeX`, `HTML`, `PDF`, `PNG`, and `Zip` folders on input and output. Empty by default.
 
 + `STYLE` : The names of the styles to compile. If empty, every style available for a given type will be used. Empty by default.
 
++ `STYLES` : The directory in which to find style files. Defaults to `Styles`.
+
++ `TEX` : The LaTeX compiler to use. Defaults to `xelatex`.
+
 + `YAML` : The name of the YAML metadata file. Defaults to `info.yml`.
+
++ `ZIP` : The directory in which to place Zip files. Defaults to `Zip`.
 
 ### Recursion and includes
 
