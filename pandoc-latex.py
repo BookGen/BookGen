@@ -44,13 +44,17 @@ def action(elem, doc):
 			return RawInline('\\textbf{\\textit{', format='latex')
 		elif elem.text=='<cite>' or elem.text=='<i>':
 			return RawInline('\\textit{', format='latex')
+		elif elem.text=='<del>' or elem.text=='<s>':
+			return RawInline('\\sout{', format='latex')
+		elif elem.text=='<ins>':
+			return RawInline('\\uuline{', format='latex')
 		elif elem.text=='<small>':
 			return RawInline('{\small{}', format='latex')
 		elif re.match(r'^<br */?>$', elem.text):
 			return LineBreak()
 		elif re.match(r'^<wbr */?>$', elem.text):
 			return RawInline('\\linebreak[0]{}', format='latex')
-		elif elem.text=='</b>' or elem.text=='</cite>' or elem.text=='</i>' or elem.text=='</small>':
+		elif elem.text=='</b>' or elem.text=='</cite>' or elem.text=='</i>' or elem.text=='</del>' or elem.text=='</s>' or elem.text=='</ins>' or elem.text=='</small>':
 			return RawInline('}', format='latex')
 		elif elem.text=='</dfn>':
 			return RawInline('}}', format='latex')
@@ -119,6 +123,12 @@ def action(elem, doc):
 			]
 		elif 'at' in elem.classes and len(elem.content) == 0:
 			return RawInline('\\@', format='latex')
+	elif isinstance(elem, Strikeout):
+		return [
+			RawInline('\sout{', format='latex'),
+			Span(*elem.content),
+			RawInline('}')
+		]
 
 def main(doc=None):
 	return run_filter(action, doc=doc)
