@@ -3,7 +3,7 @@
 % Package includes %
 \RequirePackage[usenames,dvipsnames,svgnames,table]{xcolor}
 \RequirePackage[pages=some]{background}
-\RequirePackage{mfirstuc,newunicodechar,quoting,lettrine,extdash,soul}
+\RequirePackage{mfirstuc,newunicodechar,quoting,lettrine,extdash}
 \RequirePackage[normalem]{ulem}
 \RequirePackage[hyphens]{url}
 \RequirePackage[breaklinks]{hyperref}
@@ -45,11 +45,11 @@
 \providecommand{\homepageinfo}{}
 \providecommand{\yearinfo}{\the\year}
 \providecommand{\rightsinfo}{All rights reserved.}
-\providecommand{\editioninfo}{Standard Edition}
+\providecommand{\styleinfo}{Standard}
 \providecommand{\draftinfo}{\today}
-\providecommand{\detailsinfo}{}
 \providecommand{\publisherinfo}{Self­‑published}
-\providecommand{\copyrightinfo}{©~\yearinfo{} \authorinfo{}. \rightsinfo{}}
+\providecommand{\thecopyright}{©~\yearinfo{} \authorinfo{}. \rightsinfo{}}
+\providecommand{\bookgenname}{}
 \providecommand{\bookgentype}{standalone}
 
 %%  Underline setup:  %%
@@ -62,15 +62,3 @@
 
 % Colors setup %
 \providecolor{shadecolor}{named}{Gainsboro}
-
-% Hyperlink setup %
-\hypersetup{
-	pdfinfo={
-		Title={\titleinfo},
-		Author={\authorinfo},
-		Creator={XeLaTeX}
-	},
-	pdfpagemode=UseNone,
-	pdfdisplaydoctitle=true,
-	pdfpagelayout=TwoPageRight
-}

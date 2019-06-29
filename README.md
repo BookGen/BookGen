@@ -45,7 +45,6 @@ In addition to GNU Make, you will need to make sure you have the following insta
 			+ `hyperref`
 			+ `logreq`
 			+ `ncctools`
-			+ `soul`
 			+ `ulem`
 			+ `xcolor`
 			+ `ifetex`
@@ -134,18 +133,18 @@ There are a few added features you can take advantage of in your Markdown for sp
 
 The metadata provided in `info.yml` can customize the compiled result. The available parameters are :
 
-+ `title` : The title of the work ( plaintext only )
-+ `series` : The series that the work belongs to ( plaintext only )
-+ `author` : The author of the work ( plaintext only )
-+ `publisher` : The publisher of the work ( plaintext only )
-+ `description` : A description of the work ( plaintext only )
++ `title` : The title of the work
++ `series` : The series that the work belongs to
++ `author` : The author of the work
++ `publisher` : The publisher of the work
++ `description` : A description of the work
 + `homepage` : The homepage for the work ( as a URL )
 + `year` : The copyright year( s ) of the work
-+ `rights` : The ( short ) rights or license statement associated with the work
-+ `details` : Detailed information regarding the licensing or publication of the work ; this can contain paragraph content
++ `rights` : A short rights statement about the work
 + `draft` : A short string indicating the current draft of the work ; this will be set automatically for individual texts ( but not the work as a whole ) if you have `DRAFTS` enabled
 + `lang` : The language of the work ( for HTML )
 + `final` : Use this to declare that your work is finished and remove the **DRAFT** markings.
++ `custom` : An array of objects with `key` and `value` properties, used to provide custom metadata to styles. Each `key` must be all­‑lowercase and be valid as both an XML attribute and a LaTeX command.
 + `header-includes` : Content to include in the header of every document ; you should only use this to insert raw HTML headers ( LaTeX header information should be specified in your style file )
 + `include-before` : Content to include at the beginning of every text
 + `include-after` : Content to include at the ending of every text

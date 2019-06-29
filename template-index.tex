@@ -23,22 +23,24 @@ $if(rights)$
 \renewcommand{\rightsinfo}{$rights$}
 $endif$
 $if(style)$
-\renewcommand{\editioninfo}{\capitalisewords{$style$}}
+\renewcommand{\styleinfo}{$style$}
 $endif$
 $if(draft)$
 \renewcommand{\draftinfo}{$draft$}
 $endif$
-$if(details)$
-\renewcommand{\detailsinfo}{$details$}
-$endif$
 $if(publisher)$
 \renewcommand{\publisherinfo}{$publisher$}
 $endif$
+$for(custom)$
+\providecommand{\$custom.key$info}{}
+\renewcommand{\$custom.key$info}{$custom.value$}
+$endfor$
 $if(final)$
 \DraftOff
 $else$
 \DraftOn
 $endif$
+\hypersetup{pdfinfo={Title={\titleinfo},Author={\authorinfo},Creator={BookGen}},pdfpagemode=UseNone,pdfdisplaydoctitle=true,pdfpagelayout=TwoPageRight}
 \providecommand{\beforefulltext}{}
 \providecommand{\afterfulltext}{}
 
@@ -62,12 +64,9 @@ $endfor$
 \thispagestyle{empty}
 \providecommand{\makecopyright}{\clearpage\null
 \vfill
-\noindent\tiny \copyrightinfo\par
+\noindent\tiny \thecopyright\par
 \medskip
-\noindent\editioninfo{} Edition, \draftinfo{}.\par
-\vfill
-\vfill
-\noindent\detailsinfo
+\noindent\styleinfo{} Edition, \draftinfo{}.\par
 \vfill\clearpage}
 \makecopyright
 \end{titlingpage}
