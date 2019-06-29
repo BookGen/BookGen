@@ -26,7 +26,7 @@ $header-includes$
 $endfor$
 </head>
 <body$if(title)$ data-title-info="$title$"$endif$$if(series)$ data-series-info="$series$"$endif$$if(author)$ data-author-info="$author$"$endif$$if(publisher)$ data-publisher-info="$publisher$"$endif$$if(description)$ data-description-info="$description$"$endif$$if(year)$ data-year-info="$year$"$endif$$if(rights)$ data-rights-info="$rights$"$endif$$if(draft)$ data-draft-info="$draft$"$endif$$for(custom)$ data-$custom.key$-info="$custom.value$"$endfor$>
-	<nav epub:type="toc">
+	<nav epub:type="toc" role="doc-toc">
 		<h1>Contents</h1>
 
 		<!-- BEGIN CONTENT -->
