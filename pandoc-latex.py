@@ -103,7 +103,22 @@ def action(elem, doc):
 				Div(*elem.content),
 				RawBlock('}', format='latex')
 			]
-		elif elem.attributes['role'] == 'note':
+		elif 'verse' in elem.classes:
+			result = [RawBlock('\\begin{verse}\itshape', format='latex')]
+			if 'alternating' in elem.classes:
+				for subelem in elem.content.list:
+					if isinstance(subelem, LineBlock):
+						result += [
+							RawBlock('\\begin{altverse}', format='latex'),
+							subelem,
+							RawBlock('\\end{altverse}', format='latex')
+						]
+					else:
+						result += [subelem]
+			else:
+				result + elem.content.list
+			return result + [RawBlock('\\end{verse}', format='latex')]
+		elif elem.attributes.get('role') == 'note':
 			unindented = False
 			elem.walk(unindent)
 			return [
@@ -111,6 +126,10 @@ def action(elem, doc):
 				Div(*elem.content),
 				RawBlock('\\end{snugshade}', format='latex')
 			]
+		elif 'continuation' in elem.classes:
+			unindented = False
+			elem.walk(unindent)
+			return elem
 	elif isinstance(elem, Header):
 		if elem.level == 1:
 			return Header(*elem.content, attributes=elem.attributes, classes=(elem.classes[:] if doc.get_metadata('type') == 'chapter' or doc.get_metadata('type') == 'appendix' else ['unnumbered'] + elem.classes), identifier=elem.identifier, level=1)
@@ -127,8 +146,11 @@ def action(elem, doc):
 				RawInline('\\textcolor'+ ('[HTML]' if colour[0] == '#' else '[named]') +'{' + (colour[1:] if colour[0] == '#' else colour) + '}', format='latex'),
 				Span(*elem.content)
 			]
-		elif 'at' in elem.classes and len(elem.content) == 0:
-			return RawInline('\\@', format='latex')
+		elif len(elem.content) == 0:
+			if 'at' in elem.classes:
+				return RawInline('\\@', format='latex')
+			elif 'indent' in elem.classes:
+				return RawInline('\\vin{}', format='latex')
 	elif isinstance(elem, Strikeout):
 		return [
 			RawInline('\sout{', format='latex'),

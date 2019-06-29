@@ -100,7 +100,7 @@ This beïng a Makefile, **you should not use colons, semicolons, or spaces in fi
 
 There are a few added features you can take advantage of in your Markdown for special formatting and display :
 
-+ A Div with a class of `chapterprecis` can be used at the beginning of a chapter to insert a chapter precis:
++ A Div with a class of `chapterprecis` can be used at the beginning of a chapter to insert a chapter precis :
 
 		# My Chapter
 
@@ -109,21 +109,50 @@ There are a few added features you can take advantage of in your Markdown for sp
 		| Yes, very good indeed.
 		:::::::::::::::::::::
 
++ A Div with a class of `verse` can be used for verse.
+
+	If you also set the class `alternating`, then every other line will be indented :
+
+		::: {.verse .alternating}
+		| A couplet writ in very little time,
+		| With indentation on this second line.
+		:::
+
+	Alternatively, you can use an empty Span with a class of `indent` to manually indent verse lines :
+
+		::: verse :::
+		| There once was a limerick, quite good,
+		| And people assumed that it would
+		| []{.indent}End with some joke
+		| []{.indent}About some poor bloke,
+		| But I donʼt see whyfor it should.
+		:::::::::::::
+
 + A Div with a `role` of `note` can be used for notes:
 
 		::: {role=note}
 		This is a note.
 		:::
 
-+ A Span with a class of `lettrine` can be used for leading text:
++ A Div with a class of `continuation` can be used to create a paragraph which continues from the previous, useful if a blockquote or line of verse comes between them :
+
+		To quote Light Yagami from <cite>Death Note</cite>,
+
+		> This useless Pride, I suppose Iʼll have to… Get Rid of It!
+
+		::: continuation :::
+		(as translated by the English dub).
+		:::::::::::::::::::
+
++ A Span with a class of `lettrine` can be used for leading text :
 
 		[This is the beginning]{.lettrine} of a section of text.
 
-+ A Span with a `data-colour` ( or `data-color` ) attribute can be used to set the text colour. This can be either a 6­‑digit HTML hex value or an SVG colour name. In the latter case, the name must be properly capitalized:
++ A Span with a `data-colour` ( or `data-color` ) attribute can be used to set the text colour. This can be either a 6­‑digit HTML hex value or an SVG colour name. In the latter case, the name must be properly capitalized :
 
 		Some [red]{data-colour=#FF0000} and [blue]{data-colour=MidnightBlue} text.
 
-+ An empty Span with a class of `at` can be used to generate a `\@` for sentence­‑spacing adjustment in LaTeX. This is only necessary if you are generating PDFs with a style which does not use `\frenchspacing`.
++ An empty Span with a class of `at` can be used to generate a `\@` for sentence­‑spacing adjustment in LaTeX. This is only necessary if you are generating PDFs with a style which does not use `\frenchspacing` :
 
 		Reading Rainbow, Mr[]{.at}. Rogers, etc.[]{.at} are all fond memories for me.
 
