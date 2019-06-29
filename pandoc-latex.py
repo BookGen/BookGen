@@ -11,6 +11,12 @@ import re
 madelettrine = False
 unindented = False
 
+def isOneOf(elem,names):
+	for name in names:
+		if elem.text=='<'+name+'>' or elem.text.startswith('<'+name+' '):
+			return True
+	return False
+
 def unindent(elem,doc):
 	global unindented
 	if unindented:
@@ -36,35 +42,35 @@ def makelettrine(elem,doc):
 def action(elem, doc):
 	global madelettrine
 	if isinstance(elem, RawInline) and elem.format=='html':
-		if elem.text.startswith('<link'):
+		if isOneOf(elem,['link','/link','/br','/wbr']):
 			return []
-		elif elem.text=='<b>':
+		elif isOneOf(elem,['b']):
 			return RawInline('\\textbf{', format='latex')
-		elif elem.text=='<dfn>':
+		elif isOneOf(elem,['dfn']):
 			return RawInline('\\textbf{\\textit{', format='latex')
-		elif elem.text=='<cite>' or elem.text=='<i>':
+		elif isOneOf(elem,['cite','i']):
 			return RawInline('\\textit{', format='latex')
-		elif elem.text=='<del>' or elem.text=='<s>':
+		elif isOneOf(elem,['del','s']):
 			return RawInline('\\sout{', format='latex')
-		elif elem.text=='<ins>':
+		elif isOneOf(elem,['ins']):
 			return RawInline('\\uuline{', format='latex')
-		elif elem.text=='<small>':
+		elif isOneOf(elem,['small']):
 			return RawInline('{\small{}', format='latex')
-		elif re.match(r'^<br */?>$', elem.text):
+		elif isOneOf(elem,['br']):
 			return LineBreak()
-		elif re.match(r'^<wbr */?>$', elem.text):
+		elif isOneOf(elem,['wbr']):
 			return RawInline('\\linebreak[0]{}', format='latex')
-		elif elem.text=='</b>' or elem.text=='</cite>' or elem.text=='</i>' or elem.text=='</del>' or elem.text=='</s>' or elem.text=='</ins>' or elem.text=='</small>':
+		elif isOneOf(elem,['/b','/cite','/i','/del','/s','/ins','/small']):
 			return RawInline('}', format='latex')
-		elif elem.text=='</dfn>':
+		elif isOneOf(elem,['/dfn']):
 			return RawInline('}}', format='latex')
 	elif isinstance(elem, RawBlock):
-		if elem.text.startswith('<meta') or elem.text.startswith("<script") or elem.text.startswith("<style"):
+		if isOneOf(elem,['meta','script','style','/meta','/script','/style']):
 			return []
-		elif re.match(r'^<hr */?>$', elem.text):
+		elif isOneOf(elem,['hr']):
+			if re.match(r'^<hr +class="plain" */?>$', elem.text):
+				return RawBlock('\plainbreak{1}', format='latex')
 			return RawBlock('\\fancybreak{\\pfbreakdisplay}', format='latex')
-		elif re.match(r'^<hr +class="plain" */?>$', elem.text):
-			return RawBlock('\plainbreak{1}', format='latex')
 	elif isinstance(elem, HorizontalRule):
 		return RawBlock('\\fancybreak{\\pfbreakdisplay}', format='latex')
 	elif isinstance(elem, Link):
