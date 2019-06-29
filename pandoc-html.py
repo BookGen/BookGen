@@ -30,8 +30,13 @@ def action(elem, doc):
 		result = []
 		for item in elem.content.list:
 			if isinstance(item, LineItem):
-				itemcontent = item.content.list + [LineBreak()]
-				result += [Span(*itemcontent, classes=[u'line-item'])]
+				indented = False
+				if isinstance(item.content[0], Span) and len(item.content[0].content) == 0 and 'indent' in item.content[0].classes:
+					indented = True
+					itemcontent = item.content.list[1:] + [LineBreak()]
+				else:
+					itemcontent = item.content.list + [LineBreak()]
+				result += [Span(*itemcontent, classes=([u'line-item', u'indented'] if indented else [u'line-item']))]
 			else:
 				result += [item]
 		return Div(Para(*result), classes=[u'line-block'])
@@ -41,7 +46,7 @@ def action(elem, doc):
 			elem.walk(makelettrine)
 		elif 'data-colour' in elem.attributes or 'data-color' in elem.attributes:
 			return Span(*elem.content, identifier=elem.identifier, classes=elem.classes, attributes=dict( { 'style': 'color: ' + elem.attributes.get('data-colour', elem.attributes.get('data-color')) }, **elem.attributes))
-		elif 'at' in elem.classes and len(elem.content) == 0:
+		elif len(elem.content) == 0 and 'at' in elem.classes:
 			return []
 
 def main(doc=None):
