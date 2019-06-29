@@ -56,16 +56,16 @@ def action(elem, doc):
 			return RawInline('\\uuline{', format='latex')
 		elif isOneOf(elem,['small']):
 			return RawInline('{\small{}', format='latex')
-		elif isOneOf(elem,['br']):
+		elif isOneOf(elem,['br','br/']):
 			return LineBreak()
-		elif isOneOf(elem,['wbr']):
+		elif isOneOf(elem,['wbr','wbr/']):
 			return RawInline('\\linebreak[0]{}', format='latex')
 		elif isOneOf(elem,['/b','/cite','/i','/del','/s','/ins','/small']):
 			return RawInline('}', format='latex')
 		elif isOneOf(elem,['/dfn']):
 			return RawInline('}}', format='latex')
 	elif isinstance(elem, RawBlock):
-		if isOneOf(elem,['meta','script','style','/meta','/script','/style']):
+		if isOneOf(elem,['meta','script','style','meta/''/meta','/script','/style']):
 			return []
 		elif isOneOf(elem,['hr']):
 			if re.match(r'^<hr +class="plain" */?>$', elem.text):
