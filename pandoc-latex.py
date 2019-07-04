@@ -80,7 +80,7 @@ def action(elem, doc):
 				Span(*elem.content)
 			]
 		return [
-			RawInline(u'\\href{' + elem.url.replace('%', '\\%') + u'}{\\dashuline', format='latex'),
+			RawInline(u'\\href{' + elem.url.replace('%', '\\%').replace('#', '\\#') + u'}{\\dashuline', format='latex'),
 			Span(*elem.content),
 			RawInline('}', format='latex')
 		]
@@ -95,7 +95,7 @@ def action(elem, doc):
 			if len(elem.content) == 1 and isinstance(elem.content[0], Para):
 				return [
 					RawBlock('\\chapterprecishere{', format='latex'),
-					Para(*elem.content[0].content),
+					elem.content[0],
 					RawBlock('}', format='latex')
 				]
 			return [
@@ -116,7 +116,7 @@ def action(elem, doc):
 					else:
 						result += [subelem]
 			else:
-				result + elem.content.list
+				result += elem.content.list
 			return result + [RawBlock('\\end{verse}', format='latex')]
 		elif elem.attributes.get('role') == 'note':
 			unindented = False
@@ -146,6 +146,9 @@ def action(elem, doc):
 				RawInline('\\textcolor'+ ('[HTML]' if colour[0] == '#' else '[named]') +'{' + (colour[1:] if colour[0] == '#' else colour) + '}', format='latex'),
 				Span(*elem.content)
 			]
+		elif 'data-font' in elem.attributes:
+			result = [RawInline('\\' + elem.attributes.get('data-font') + '{}', format='latex')] + elem.content.list
+			return Span(*result)
 		elif len(elem.content) == 0:
 			if 'at' in elem.classes:
 				return RawInline('\\@', format='latex')

@@ -152,9 +152,13 @@ There are a few added features you can take advantage of in your Markdown for sp
 
 		Some [red]{data-colour=#FF0000} and [blue]{data-colour=MidnightBlue} text.
 
++ A Span with a `data-font` attribute may be used to manually set the text font. Which values are supported depends on your current style.
+
+		This is [fantastic]{data-font=fantasyfont}.
+
 + An empty Span with a class of `at` can be used to generate a `\@` for sentence­‑spacing adjustment in LaTeX. This is only necessary if you are generating PDFs with a style which does not use `\frenchspacing` :
 
-		Reading Rainbow, Mr[]{.at}. Rogers, etc.[]{.at} are all fond memories for me.
+		Reading Rainbow, Mr.[]{.at} Rogers, etc.[]{.at} are all fond memories for I[]{.at}.
 
 + A raw HTML block of the form `<hr class="plain"/>` represents a plain ( unfancy ) break.
 
