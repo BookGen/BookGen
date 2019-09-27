@@ -145,7 +145,7 @@ allstylezips = $(foreach style,$(call stylenames,$(2)),$(call stylezip,$(1),$(st
 # $(2): The resulting file extension
 # $(3): File names
 
-unstyledfiles = $(if $(findstring /,$(3)),$(patsubst %,$(FILEPREFIX)$(1)/%/$(notdir $(2)),$(3)),$(patsubst %,$(FILEPREFIX)$(1)/%.$(2),$(3)))
+unstyledfiles = $(if $(findstring /,$(2)),$(patsubst %,$(FILEPREFIX)$(1)/%/$(notdir $(2)),$(3)),$(patsubst %,$(FILEPREFIX)$(1)/%.$(2),$(3)))
 unstyledchapters = $(call unstyledfiles,$(1),$(2),$(addprefix $(CHAPTERPREFIX),$(allchapternames)))
 unstyledappendixes = $(call unstyledfiles,$(1),$(2),$(addprefix $(APPENDIXPREFIX),$(allappendixnames)))
 unstyledstandalones = $(call unstyledfiles,$(1),$(2),$(allstandalonenames))
