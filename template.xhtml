@@ -45,7 +45,9 @@ $include-after$
 
 $endfor$
 		<footer>
+$if(final)$
 			<p id="BookGen.copyright">©$if(year)$ $year$$endif$$if(author)$ $author$$endif$.$if(rights)$ $rights$$endif$</p>
+$endif$
 $if(draft)$
 			<p id="BookGen.draft">Draft $draft$.</p>
 $endif$
