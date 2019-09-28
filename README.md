@@ -172,17 +172,18 @@ The metadata provided in `info.yml` can customize the compiled result. The ava
 + `publisher` : The publisher of the work
 + `description` : A description of the work
 + `homepage` : The homepage for the work ( as a URL )
++ `download` : A URL from which to download the work
++ `repository` : A URL at which the source repository for the work is located
 + `year` : The copyright year( s ) of the work
 + `rights` : A short rights statement about the work
 + `draft` : A short string indicating the current draft of the work ; this will be set automatically for individual texts ( but not the work as a whole ) if you have `DRAFTS` enabled
 + `lang` : The language of the work ( for HTML )
 + `final` : Use this to declare that your work is finished and remove the **DRAFT** markings.
-+ `custom` : An array of objects with `key` and `value` properties, used to provide custom metadata to styles. Each `key` must be all­‑lowercase and be valid as both an XML attribute and a LaTeX command.
 + `header-includes` : Content to include in the header of every document ; you should only use this to insert raw HTML headers ( LaTeX header information should be specified in your style file )
 + `include-before` : Content to include at the beginning of every text
 + `include-after` : Content to include at the ending of every text
 
-You can also provide this metadata on a per­‑text basis for additional customization.
+Styles may define additional metadata properties. You can also provide this metadata on a per­‑text basis for additional customization.
 
 ### Bibliography
 

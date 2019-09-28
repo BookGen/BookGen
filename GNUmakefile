@@ -14,6 +14,8 @@
 SHELL = /bin/sh
 srcdir := $(patsubst %/GNUmakefile,%,$(lastword $(MAKEFILE_LIST)))
 override octothorpe := \#
+override empty :=
+override space := $(empty) $(empty)
 
 #  DEFAULT VALUES FOR OVERRIDES  #
 
@@ -29,6 +31,20 @@ FULLTEXT := text
 HTML := HTML
 INDEX := index
 LATEX := LaTeX
+LOCALIZATION_APPENDICES := Appendices
+LOCALIZATION_APPENDIX := Appendix
+LOCALIZATION_BIBLIO := Bibliography
+LOCALIZATION_CHAPTER := Chapter
+LOCALIZATION_CHAPTERS := Chapters
+LOCALIZATION_DRAFT := Draft
+LOCALIZATION_FIRST = First $(LOCALIZATION_CHAPTER)
+LOCALIZATION_HOME := Home
+LOCALIZATION_INDEX := Contents
+LOCALIZATION_LAST = Latest $(LOCALIZATION_CHAPTER)
+LOCALIZATION_NEXT = Next $(LOCALIZATION_CHAPTER)
+LOCALIZATION_PREV = Previous $(LOCALIZATION_CHAPTER)
+LOCALIZATION_REPOSITORY = Source
+LOCALIZATION_STANDALONE := Problem
 MARKDOWN := Markdown
 PDF := PDF
 PNG := PNG
@@ -80,13 +96,16 @@ allappendixnames := $(call appendixnames,$(appendixsrcs))
 allnames := $(allstandalonenames) $(addprefix $(CHAPTERPREFIX),$(allchapternames)) $(addprefix $(APPENDIXPREFIX),$(allappendixnames))
 
 types = $(foreach src,$(1),$(if $(findstring $(src),$(appendixsrcs)),appendix,$(if $(findstring $(src),$(chaptersrcs)),chapter,standalone)))
+localizedtypes = $(foreach src,$(1),$(LOCALIZATION_$(if $(findstring $(src),$(appendixsrcs)),APPENDIX,$(if $(findstring $(src),$(chaptersrcs)),CHAPTER,STANDALONE))))
 names = $(call $(call types,$(1))names,$(1))
 
 # FOLDERS AND LINKS #
 
 makefolders = remaining="$(or $(1),$@)"; while [[ "$$remaining" == */* ]]; do [[ -d "$${remaining%%/*}" ]] || mkdir "$${remaining%%/*}"; cd "$${remaining%%/*}"; remaining="$${remaining$(octothorpe)*/}"; done
 
-returntoroot = $(foreach dir,$(strip $(subst /, ,$(dir /$(1)))),../)
+returntoroot = $(subst $(space),,$(foreach dir,$(strip $(subst /, ,$(dir /$(1)))),../))
+
+relativepath = $(if $(2),$(call returntoroot,$(1))$(2))
 
 define link
 $(makefolders)
@@ -206,10 +225,12 @@ endef
 
 # YAML #
 
-# We do not want to set the chapter for standalone documents.
-chapteryaml = $(if $(findstring $(call types,$<),chapter appendix),echo "chapter: $(call names,$<)";,)
+localizationyaml = echo "---"; echo "noun: $(call localizedtypes,$<)"; echo "localization:";$(foreach lstr,APPENDICES:appendices APPENDIX:appendix BIBLIO:biblio CHAPTER:chapter CHAPTERS:chapters DRAFT:draft FIRST:first INDEX:index LAST:last NEXT:next PREV:prev STANDALONE:standalone, echo "  $(lastword $(subst :, ,$(lstr))): $(LOCALIZATION_$(firstword $(subst :, ,$(lstr))))";) echo "..."; echo;
 
-fileyaml = echo "name: $(call names,$<)"; $(chapteryaml) $(if $(DRAFTS),echo "draft: $(basename $(notdir $(lastword $(sort $(wildcard $(DRAFTS)/$(call standalonenames,$<)/*.md)))))";,) echo "type: $(call types,$<)"
+# We do not want to set the chapter for standalone documents.
+chapteryaml = $(if $(findstring $(call types,$<),chapter appendix),echo "chapter: $(call names,$<)";)
+
+fileyaml = echo "name: $(call names,$<)"; $(chapteryaml)$(if $(DRAFTS),echo "draft: $(basename $(notdir $(lastword $(sort $(wildcard $(DRAFTS)/$(call standalonenames,$<)/*.md)))))";) echo "type: $(call types,$<)";
 
 # Empty YAML if no file exists.
 $(YAML):
@@ -230,12 +251,12 @@ $(eval $(call unstyledtargets,$(LATEX),tex,$(INDEX)))
 
 $(call unstyledeverything,$(LATEX),tex): $(FILEPREFIX)$(LATEX)/%.tex: $$(call srcs,$$*) $(YAML) $(srcdir)/pandoc-latex.py $(srcdir)/template.tex
 	$(makefolders)
-	(cat $<; echo; echo; echo "---"; cat $(YAML); $(fileyaml); echo "...") | pandoc -f markdown-smart -t latex-smart --standalone --template "$(srcdir)/template.tex" --filter "$(srcdir)/pandoc-latex.py" -o $@ --top-level-division=chapter $(if $(BIBLIOGRAPHY),--biblatex,)
+	(cat $<; echo; echo; $(localizationyaml) echo "---"; cat $(YAML); $(fileyaml) echo "...") | pandoc -f markdown-smart -t latex-smart --standalone --template "$(srcdir)/template.tex" --filter "$(srcdir)/pandoc-latex.py" -o $@ --top-level-division=chapter $(if $(BIBLIOGRAPHY),--biblatex,)
 	@echo "LaTeX file for $< generated at $@"
 
 $(FILEPREFIX)$(LATEX)/$(INDEX).tex: $$(call unstyledeverything,$(LATEX),tex) $(YAML) $(srcdir)/pandoc-latex.py
 	$(makefolders)
-	(echo "---"; cat $(YAML); echo "name: $(INDEX)"; echo "type: index"; echo "...") | pandoc -f markdown-smart -t latex-smart --standalone --template "$(srcdir)/template.tex" --filter "$(srcdir)/pandoc-latex.py" -o $@ --top-level-division=chapter $(if $(BIBLIOGRAPHY),--biblatex,)
+	($(localizationyaml) echo "---"; cat $(YAML); echo "name: $(INDEX)"; echo "type: index"; echo "...") | pandoc -f markdown-smart -t latex-smart --standalone --template "$(srcdir)/template.tex" --filter "$(srcdir)/pandoc-latex.py" -o $@ --top-level-division=chapter $(if $(BIBLIOGRAPHY),--biblatex,)
 	(echo "\\\\frontmatter"; $(foreach standalone,$(allstandalonenames),echo "\\\\include{$(standalone)}";) echo "\\\\cleardoublepage\\\\tableofcontents"; echo; echo "\\\\clearpage\\\\null\\\\thispagestyle{cleared}\\\\cleartooddpage[\\\\null\\\\thispagestyle{cleared}]\\\\mainmatter"; echo; $(foreach chapter,$(allchapternames),echo "\\\\include{$(CHAPTERPREFIX)$(chapter)}";) echo; $(if $(allappendixnames),echo "\\\\clearpage\\\\null\\\\thispagestyle{cleared}\\\\cleartooddpage[\null\thispagestyle{cleared}]\\\\appendix\\\\appendixpage"; $(foreach appendix,$(allappendixnames),echo "\\\\include{$(APPENDIXPREFIX)$(appendix)}";) echo;,) echo "\\\\clearpage$(if $(BIBLIOGRAPHY),\\\\null\\\\thispagestyle{cleared}\\\\cleartooddpage[\\\\null\\\\thispagestyle{cleared}]\\\\backmatter\\\\printbibliography,)") >> $@
 	@echo "LaTeX index generated at $@"
 
@@ -243,19 +264,19 @@ $(FILEPREFIX)$(LATEX)/$(INDEX).tex: $$(call unstyledeverything,$(LATEX),tex) $(Y
 
 $(eval $(call targets,$(HTML),css,xhtml,$(INDEX) $(basename $(BIBLIOGRAPHY))))
 
-$(call alleverything,$(HTML),css,xhtml): $$(call srcs,$$(call filenames,$(HTML),$$(call styles,$$@),xhtml,$$@)) $(YAML) $(srcdir)/pandoc-html.py $(srcdir)/template.xhtml $(STYLES)/$$(call styles,$$@).css
+$(call alleverything,$(HTML),css,xhtml): $$(call srcs,$$(call filenames,$(HTML),$$(call styles,$$@),xhtml,$$@)) $(YAML) $(srcdir)/pandoc-html.py $(srcdir)/template.xhtml $(STYLES)/$$(call styles,$$@).css $$(wildcard $(STYLES)/$$(call styles,$$@).py)
 	$(makefolders)
-	(cat $<; echo; echo; echo "---"; echo "suppress-bibliography: true"; $(if $(BIBLIOGRAPHY),echo "bibliography: $(addsuffix .bib,$(basename $(BIBLIOGRAPHY)))"; echo "citation-style: '$(realpath $(srcdir)/chicago-note-bibliography-16th-edition.csl)'";,) echo "styles:"; echo "- name: $(call styles,$@)"; echo "  css: |"; echo '    ```{=html}'; cat $(STYLES)/$(call styles,$@).css | sed 's/^/    /'; echo '    ```'; $(if $(ALLSTYLES),$(foreach style,$(filter-out $(call styles,$@),$(stylenames)),echo "- name: $(style)"; echo "  css: |"; echo '    ```{=html}'; cat $(STYLES)/$(style).css | sed 's/^/    /'; echo '    ```';)) cat $(YAML); $(fileyaml); $(if $(findstring $(call types,$<),appendix),echo "appendix: true";,) echo "...") | pandoc -f markdown-smart -t html5-smart --standalone --template "$(srcdir)/template.xhtml"$(if $(wildcard $(STYLES)/$(call styles,$@).py), --filter $(wildcard $(STYLES)/$(call styles,$@).py),) --filter "$(srcdir)/pandoc-html.py"$(if $(BIBLIOGRAPHY), --filter pandoc-citeproc,) -o $@ --self-contained --section-divs --mathml
+	(cat $<; echo; echo; $(localizationyaml) echo "---"; echo "suppress-bibliography: true";$(if $(BIBLIOGRAPHY), echo "bibliography: $(addsuffix .bib,$(basename $(BIBLIOGRAPHY)))"; echo "citation-style: '$(realpath $(srcdir)/chicago-note-bibliography-16th-edition.csl)'";) echo "styles:"; echo "- name: $(call styles,$@)"; echo "  css: |"; echo '    ```{=html}'; cat $(STYLES)/$(call styles,$@).css | sed 's/^/    /'; echo '    ```';$(if $(ALLSTYLES),$(foreach style,$(filter-out $(call styles,$@),$(stylenames)), echo "- name: $(style)"; echo "  css: |"; echo '    ```{=html}'; cat $(STYLES)/$(style).css | sed 's/^/    /'; echo '    ```';)) cat $(YAML); $(fileyaml) echo "index: $(call relativepath,$(call standalonenames,$<).xhtml,$(INDEX)).xhtml"; echo "first: $(or $(call relativepath,$(call standalonenames,$<).xhtml,$(filter-out $(call standalonenames,$<),$(firstword $(allnames)))),$(octothorpe) ).xhtml"; echo "last: $(or $(call relativepath,$(call standalonenames,$<).xhtml,$(filter-out $(call standalonenames,$<),$(lastword $(allnames)))),$(octothorpe) ).xhtml"; echo "prev: $(or $(call relativepath,$(call standalonenames,$<).xhtml,$(lastword $(subst :,$(space),$(firstword $(subst $(call standalonenames,$<), ,$(subst $(space),:,$(allnames))))))),$(octothorpe) ).xhtml"; echo "next: $(or $(call relativepath,$(call standalonenames,$<).xhtml,$(firstword $(subst :,$(space),$(lastword $(subst $(call standalonenames,$<), ,$(subst $(space),:,$(allnames))))))),$(octothorpe) ).xhtml";$(if $(BIBLIOGRAPHY), echo "biblio: $(call relativepath,$(call standalonenames,$<).xhtml,$(basename $(BIBLIOGRAPHY))).xhtml";) $(if $(findstring $(call types,$<),appendix), echo "appendix: true";) echo "...") | pandoc -f markdown-smart -t html5-smart --standalone --template "$(srcdir)/template.xhtml"$(if $(wildcard $(STYLES)/$(call styles,$@).py), --filter $(STYLES)/$(call styles,$@).py) --filter "$(srcdir)/pandoc-html.py"$(if $(BIBLIOGRAPHY), --filter pandoc-citeproc) -o $@ --self-contained --section-divs --mathml
 	@echo "$(call styles,$@) HTML file for $< generated at $@"
 
-$(call allfiles,$(HTML),css,xhtml,$(INDEX)): $(FILEPREFIX)$(HTML)/%/$(INDEX).xhtml: $(YAML) $(srcdir)/template.xhtml $(STYLES)/%.css
+$(call allfiles,$(HTML),css,xhtml,$(INDEX)): $(FILEPREFIX)$(HTML)/%/$(INDEX).xhtml: $(YAML) $(srcdir)/template.xhtml $(STYLES)/%.css $$(wildcard $(STYLES)/%.py)
 	$(makefolders)
-	(echo 'Contents'; echo '========'; echo ; echo '```{=html}'; echo '<ol>'; $(foreach standalone,$(allstandalonenames),echo '  <li><a href="$(call returntoroot,$(INDEX).xhtml)$(standalone).xhtml">$(standalone)</a></li>';) echo '  <li><a href="$(call returntoroot,$(INDEX).xhtml)$(INDEX).xhtml">Contents</a></li>'; $(if $(allchapternames),echo '<li><span>Chapters</span><ol>'; $(foreach chapter,$(allchapternames),echo '  <li><a href="$(call returntoroot,$(INDEX).xhtml)$(subst ",&quot;,$(CHAPTERPREFIX))$(chapter).xhtml">Chapter $(chapter)</a></li>';) echo '</ol></li>';,) $(if $(allappendixnames),echo '<li><span>Appendices</span><ol>'; $(foreach appendix,$(allappendixnames), echo '  <li><a href="$(call returntoroot,$(INDEX).xhtml)$(subst ",&quot;,$(APPENDIXPREFIX))$(appendix).xhtml">Appendix $(appendix)</a></li>';) echo '</ol></li>';,) $(if $(BIBLIOGRAPHY),echo '<li><a href="$(call returntoroot,$(INDEX).xhtml)$(basename $(BIBLIOGRAPHY)).xhtml">Bibliography</a></li>';,) echo '</ol>'; echo '```'; echo; echo "---"; echo "styles:"; echo "- name: $(call styles,$@)"; echo "  css: |"; echo '    ```{=html}'; cat $(STYLES)/$*.css | sed 's/^/    /'; echo '    ```'; $(if $(ALLSTYLES),$(foreach style,$(filter-out $*,$(stylenames)),echo "- name: $(style)"; echo "  css: |"; echo '    ```{=html}'; cat $(STYLES)/$*.css | sed 's/^/    /'; echo '    ```';)) cat $(YAML); echo "...") | pandoc -f markdown-smart -t html5-smart --standalone --template "$(srcdir)/template-index.xhtml"$(if $(wildcard $(STYLES)/$(call styles,$@).py), --filter $(wildcard $(STYLES)/$(call styles,$@).py),) --filter "$(srcdir)/pandoc-html.py" $(if $(BIBLIOGRAPHY),--filter pandoc-citeproc,) -o $@ --self-contained
+	(echo '```{=html}'; echo '<nav xmlns:epub="http://www.idpf.org/2007/ops" epub:type="toc" role="doc-toc">'; echo '```'; echo; echo '$(LOCALIZATION_INDEX)'; echo '========'; echo; echo '```{=html}'; echo '<ol>';$(foreach standalone,$(allstandalonenames), echo '&Tab;<li><a href="$(call returntoroot,$(INDEX).xhtml)$(standalone).xhtml">$(standalone)</a></li>';) echo '&Tab;<li><a href="$(call returntoroot,$(INDEX).xhtml)$(INDEX).xhtml">$(LOCALIZATION_INDEX)</a></li>';$(if $(allchapternames), echo '&Tab;<li><span>$(LOCALIZATION_CHAPTERS)</span><ol>'; $(foreach chapter,$(allchapternames),echo '&Tab;&Tab;<li><a href="$(call returntoroot,$(INDEX).xhtml)$(subst ",&quot;,$(CHAPTERPREFIX))$(chapter).xhtml">$(LOCALIZATION_CHAPTER) $(chapter)</a></li>';) echo '&Tab;</ol></li>';)$(if $(allappendixnames), echo '&Tab;<li><span>$(LOCALIZATION_APPENDICES)</span><ol>'; $(foreach appendix,$(allappendixnames), echo '&Tab;&Tab;<li><a href="$(call returntoroot,$(INDEX).xhtml)$(subst ",&quot;,$(APPENDIXPREFIX))$(appendix).xhtml">$(LOCALIZATION_APPENDIX) $(appendix)</a></li>';) echo '&Tab;</ol></li>';)$(if $(BIBLIOGRAPHY), echo '&Tab;<li><a href="$(call returntoroot,$(INDEX).xhtml)$(basename $(BIBLIOGRAPHY)).xhtml">$(LOCALIZATION_BIBLIO)</a></li>';) echo '</ol>'; echo '</nav>'; echo '```'; echo; $(localizationyaml) echo "---"; echo "styles:"; echo "- name: $(call styles,$@)"; echo "  css: |"; echo '    ```{=html}'; cat $(STYLES)/$*.css | sed 's/^/    /'; echo '    ```';$(if $(ALLSTYLES),$(foreach style,$(filter-out $*,$(stylenames)), echo "- name: $(style)"; echo "  css: |"; echo '    ```{=html}'; cat $(STYLES)/$*.css | sed 's/^/    /'; echo '    ```';)) cat $(YAML); echo "name: $(LOCALIZATION_INDEX)"; echo "type: index"; echo "index: $(call returntoroot,$(call standalonenames,$<).xhtml)$(INDEX).xhtml";$(if $(BIBLIOGRAPHY), echo "biblio: $(call returntoroot,$(call standalonenames,$<).xhtml)$(basename $(BIBLIOGRAPHY)).xhtml";) echo "...") | pandoc -f markdown-smart -t html5-smart --standalone --template "$(srcdir)/template.xhtml"$(if $(wildcard $(STYLES)/$*.py), --filter $(STYLES)/$*.py) --filter "$(srcdir)/pandoc-html.py" $(if $(BIBLIOGRAPHY),--filter pandoc-citeproc) -o $@ --self-contained
 	@echo "$* HTML index generated at $@"
 
-$(call allfiles,$(HTML),css,xhtml,$(basename $(BIBLIOGRAPHY))): $(FILEPREFIX)$(HTML)/%/$(basename $(BIBLIOGRAPHY)).xhtml: $(BIBLIOGRAPHY) $(STYLES)/%.css
+$(call allfiles,$(HTML),css,xhtml,$(basename $(BIBLIOGRAPHY))): $(FILEPREFIX)$(HTML)/%/$(basename $(BIBLIOGRAPHY)).xhtml: $(BIBLIOGRAPHY) $(YAML) $(srcdir)/template.xhtml $(STYLES)/%.css $$(wildcard $(STYLES)/%.py)
 	$(makefolders)
-	(echo "---"; echo "bibliography: $(addsuffix .bib,$(basename $(BIBLIOGRAPHY)))"; echo "citation-style: '$(realpath $(srcdir)/chicago-note-bibliography-16th-edition.csl)'"; echo "styles:"; echo "- name: $(call styles,$@)"; echo "  css: |"; echo '    ```{=html}'; cat $(STYLES)/$(call styles,$@).css | sed 's/^/    /'; echo '    ```'; $(if $(ALLSTYLES),$(foreach style,$(filter-out $(call styles,$@),$(stylenames)),echo "- name: $(style)"; echo "  css: |"; echo '    ```{=html}'; cat $(STYLES)/$(style).css | sed 's/^/    /'; echo '    ```';)) cat $(YAML); echo "name: bibliography"; echo "type: bibliography"; echo "nocite: '@*'"; echo "..."; echo "$(octothorpe) Bibliography") | pandoc -f markdown-smart -t html5-smart --standalone --template "$(srcdir)/template.xhtml"$(if $(wildcard $(STYLES)/$(call styles,$@).py), --filter $(wildcard $(STYLES)/$(call styles,$@).py),) --filter "$(srcdir)/pandoc-html.py" --filter pandoc-citeproc -o $@ --self-contained --section-divs --mathml
+	($(localizationyaml) echo "---"; echo "bibliography: $(addsuffix .bib,$(basename $(BIBLIOGRAPHY)))"; echo "citation-style: '$(realpath $(srcdir)/chicago-note-bibliography-16th-edition.csl)'"; echo "styles:"; echo "- name: $(call styles,$@)"; echo "  css: |"; echo '    ```{=html}'; cat $(STYLES)/$*.css | sed 's/^/    /'; echo '    ```'; $(if $(ALLSTYLES),$(foreach style,$(filter-out $*,$(stylenames)),echo "- name: $(style)"; echo "  css: |"; echo '    ```{=html}'; cat $(STYLES)/$(style).css | sed 's/^/    /'; echo '    ```';)) cat $(YAML); echo "name: $(LOCALIZATION_BIBLIO)"; echo "type: bibliography"; echo "index: $(call returntoroot,$(call standalonenames,$<).xhtml)$(INDEX).xhtml"; echo "biblio: $(call returntoroot,$(call standalonenames,$<).xhtml)$(basename $(BIBLIOGRAPHY)).xhtml"; echo "nocite: '@*'"; echo "..."; echo "$(octothorpe) $(LOCALIZATION_BIBLIO)") | pandoc -f markdown-smart -t html5-smart --standalone --template "$(srcdir)/template.xhtml"$(if $(wildcard $(STYLES)/$*.py), --filter $(STYLES)/$*.py,) --filter "$(srcdir)/pandoc-html.py" --filter pandoc-citeproc -o $@ --self-contained --section-divs --mathml
 
 # PDF BUILDFILES #
 
@@ -269,9 +290,9 @@ $(patsubst $(FILEPREFIX)%,%,$(call allfiles,$(BUILD),cls,cls,style)): $(BUILD)/%
 $(patsubst $(FILEPREFIX)%,%,$(call allfiles,$(BUILD),cls,bib,bibliography)): $(addsuffix .bib,$(basename $(BIBLIOGRAPHY))); $(link)
 $(patsubst $(FILEPREFIX)%,%,$(call alleverything,$(BUILD),cls,tex,$(INDEX))): $$(call unstyledfiles,$(LATEX),tex,$$(call filenames,$(BUILD),$$(call styles,$(FILEPREFIX)$$@),tex,$(FILEPREFIX)$$@)); $(link)
 
-$(patsubst $(FILEPREFIX)%,%,$(call allfiles,$(BUILD),cls,xxx,GO)): $(BUILD)/%/GO.xxx: $(YAML) $(srcdir)/template-index.tex
+$(patsubst $(FILEPREFIX)%,%,$(call allfiles,$(BUILD),cls,xxx,GO)): $(BUILD)/%/GO.xxx: $(YAML) $(srcdir)/template-index.tex $(wildcard $(STYLES)/%.py)
 	$(makefolders)
-	(echo "---"; cat $(YAML); echo "style: $*"; echo "...") | pandoc -f markdown -t latex --standalone --template "$(srcdir)/template-index.tex"$(if $(wildcard $(STYLES)/$(call styles,$@).py), --filter $(wildcard $(STYLES)/$(call styles,$@).py),) -o $@
+	($(localizationyaml) echo "---"; cat $(YAML); echo "style: $*"; echo "...") | pandoc -f markdown -t latex --standalone --template "$(srcdir)/template-index.tex"$(if $(wildcard $(STYLES)/$*.py), --filter $(STYLES)/$*.py,) -o $@
 
 $(patsubst $(FILEPREFIX)%,%,$(call allfiles,$(BUILD),cls,aux,$(FULLTEXT))): $(BUILD)/%/$(FULLTEXT).aux: $(patsubst $(FILEPREFIX)%,%,$(call alleverything,$(BUILD),cls,tex,$(INDEX))) $(BUILD)/%/Makefile.sty $(BUILD)/%/bookgen.sty $(BUILD)/%/GO.xxx $(BUILD)/%/style.cls
 	$(makefolders)

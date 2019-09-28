@@ -1,8 +1,8 @@
 <!DOCTYPE html>
-<html xmlns="http://www.w3.org/1999/xhtml" xmlns:epub="http://www.idpf.org/2007/ops" $if(lang)$ lang="$lang$" xml:lang="$lang$"$endif$$if(name)$ data--book-gen-name="$name$"$endif$$if(type)$ data--book-gen-type="$type$"$endif$$if(chapter)$ data--book-gen-chapter="$chapter$"$endif$$if(final)$ data--book-gen-final=""$endif$$if(dir)$ dir="$dir$"$endif$>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:epub="http://www.idpf.org/2007/ops" $if(lang)$ lang="$lang$" xml:lang="$lang$"$endif$$if(name)$ data--book-gen-name="$name$"$endif$$if(type)$ data--book-gen-type="$type$"$endif$$if(noun)$ data--book-gen-noun="$noun$"$endif$$if(chapter)$ data--book-gen-chapter="$chapter$"$endif$$if(final)$ data--book-gen-final=""$endif$$if(dir)$ dir="$dir$"$endif$>
 <head>
 	<meta charset="utf-8"/>
-	<title>$if(series)$$series$ – $endif$$if(title)$$title$$endif$$if(name)$ $if(appendix)$A$endif$$name$$endif$</title>
+	<title>$if(series)$$series$ – $endif$$if(title)$$title$$endif$$if(name)$: $if(appendix)$A$endif$$name$$endif$</title>
 	<meta name="generator" content="pandoc"/>
 $for(author)$
 	<meta name="author" content="$author$"/>
@@ -16,6 +16,27 @@ $endif$
 $if(description)$
 	<meta name="description" content="$description$"/>
 $endif$
+$if(homepage)$
+	<link rel="home" href="$homepage$" data-external="1"/>
+$endif$
+$if(index)$
+	<link rel="contents directory index toc" href="$index$" data-external="1"/>
+$endif$
+$if(first)$
+	<link rel="first start" href="$first$" data-external="1"/>
+$endif$
+$if(prev)$
+	<link rel="prev" href="$prev$" data-external="1"/>
+$endif$
+$if(next)$
+	<link rel="next" href="$next$" data-external="1"/>
+$endif$
+$if(last)$
+	<link rel="last" href="$last$" data-external="1"/>
+$endif$
+$if(repository)$
+	<link rel="code-repository" href="$repository$" data-external="1"/>
+$endif$
 $for(styles)$
 	<style title="$styles.name$">
 $styles.css$
@@ -25,33 +46,37 @@ $for(header-includes)$
 $header-includes$
 $endfor$
 </head>
-<body$if(title)$ data-title-info="$title$"$endif$$if(series)$ data-series-info="$series$"$endif$$if(author)$ data-author-info="$author$"$endif$$if(publisher)$ data-publisher-info="$publisher$"$endif$$if(description)$ data-description-info="$description$"$endif$$if(year)$ data-year-info="$year$"$endif$$if(rights)$ data-rights-info="$rights$"$endif$$if(draft)$ data-draft-info="$draft$"$endif$$for(custom)$ data-$custom.key$-info="$custom.value$"$endfor$>
-	<article$if(chapter)$ style="Counter-Reset: BookGen-Chapter $chapter$"$endif$>
+<body $if(chapter)$ style="Counter-Reset: BookGen-Chapter $chapter$;$if(noun)$ --BookGen-Noun: '$noun$'$endif$"$else$$if(noun)$ style="--BookGen-Noun: '$noun$'"$endif$$endif$>
 $for(include-before)$
 
-		<!-- BEGIN BEFORE -->
+	<!-- BEGIN BEFORE -->
 $include-before$
-		<!-- END BEFORE -->
+	<!-- END BEFORE -->
 $endfor$
 
-		<!-- BEGIN CONTENT -->
+	<!-- BEGIN CONTENT -->
 $body$
-		<!-- END CONTENT -->
+	<!-- END CONTENT -->
 
 $for(include-after)$
-		<!-- BEGIN AFTER -->
+	<!-- BEGIN AFTER -->
 $include-after$
-		<!-- END AFTER -->
+	<!-- END AFTER -->
 
 $endfor$
-		<footer>
 $if(final)$
-			<p id="BookGen.copyright">©$if(year)$ $year$$endif$$if(author)$ $author$$endif$.$if(rights)$ $rights$$endif$</p>
-$endif$
+	<footer id="BookGen.footer">
+		<p id="BookGen.copyright">©$if(year)$ $year$$endif$$if(author)$ $author$$endif$.$if(rights)$ $rights$$endif$</p>
 $if(draft)$
-			<p id="BookGen.draft">Draft $draft$.</p>
+		<p id="BookGen.draft">$localization.draft$ $draft$.</p>
 $endif$
-		</footer>
-	</article>
+	</footer>
+$else$
+$if(draft)$
+	<footer id="BookGen.footer">
+		<p id="BookGen.draft">$localization.draft$ $draft$.</p>
+	</footer>
+$endif$
+$endif$
 </body>
 </html>

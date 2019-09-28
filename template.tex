@@ -39,10 +39,6 @@ $endif$
 $if(publisher)$
 \renewcommand{\publisherinfo}{$publisher$}
 $endif$
-$for(custom)$
-\providecommand{\$custom.key$info}{}
-\renewcommand{\$custom.key$info}{$custom.value$}
-$endfor$
 $if(final)$
 \DraftOff
 $else$
