@@ -172,6 +172,7 @@ The metadata provided in `info.yml` can customize the compiled result. The ava
 + `publisher` : The publisher of the work
 + `description` : A description of the work
 + `homepage` : The homepage for the work ( as a URL )
++ `profile` : The homepage for the author ( as a URL )
 + `download` : A URL from which to download the work
 + `repository` : A URL at which the source repository for the work is located
 + `year` : The copyright year( s ) of the work

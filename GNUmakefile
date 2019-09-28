@@ -43,6 +43,7 @@ LOCALIZATION_INDEX := Contents
 LOCALIZATION_LAST = Latest $(LOCALIZATION_CHAPTER)
 LOCALIZATION_NEXT = Next $(LOCALIZATION_CHAPTER)
 LOCALIZATION_PREV = Previous $(LOCALIZATION_CHAPTER)
+LOCALIZATION_PROFILE = Profile
 LOCALIZATION_REPOSITORY = Source
 LOCALIZATION_STANDALONE := Problem
 MARKDOWN := Markdown
@@ -225,7 +226,7 @@ endef
 
 # YAML #
 
-localizationyaml = echo "---"; echo "noun: $(call localizedtypes,$<)"; echo "localization:";$(foreach lstr,APPENDICES:appendices APPENDIX:appendix BIBLIO:biblio CHAPTER:chapter CHAPTERS:chapters DRAFT:draft FIRST:first INDEX:index LAST:last NEXT:next PREV:prev STANDALONE:standalone, echo "  $(lastword $(subst :, ,$(lstr))): $(LOCALIZATION_$(firstword $(subst :, ,$(lstr))))";) echo "..."; echo;
+localizationyaml = echo "---"; echo "noun: $(call localizedtypes,$<)"; echo "localization:";$(foreach lstr,APPENDICES:appendices APPENDIX:appendix BIBLIO:biblio CHAPTER:chapter CHAPTERS:chapters DRAFT:draft FIRST:first INDEX:index LAST:last NEXT:next PREV:prev PROFILE:profile REPOSITORY:repository STANDALONE:standalone, echo "  $(lastword $(subst :, ,$(lstr))): $(LOCALIZATION_$(firstword $(subst :, ,$(lstr))))";) echo "..."; echo;
 
 # We do not want to set the chapter for standalone documents.
 chapteryaml = $(if $(findstring $(call types,$<),chapter appendix),echo "chapter: $(call names,$<)";)
