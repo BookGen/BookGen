@@ -1,8 +1,8 @@
 <!DOCTYPE html>
-<html xmlns="http://www.w3.org/1999/xhtml" xmlns:epub="http://www.idpf.org/2007/ops" $if(lang)$ lang="$lang$" xml:lang="$lang$"$endif$$if(name)$ data--book-gen-name="$name$"$endif$$if(type)$ data--book-gen-type="$type$"$endif$$if(noun)$ data--book-gen-noun="$noun$"$endif$$if(chapter)$ data--book-gen-chapter="$chapter$"$endif$$if(final)$ data--book-gen-final=""$endif$$if(dir)$ dir="$dir$"$endif$>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:epub="http://www.idpf.org/2007/ops" $if(lang)$ lang="$lang$" xml:lang="$lang$"$endif$$if(name)$ data--book-gen-name="$name$"$endif$$if(type)$ data--book-gen-type="$type$"$endif$$if(noun)$ data--book-gen-noun="$noun$"$endif$$if(chapter)$ data--book-gen-chapter="$chapter$"$endif$$if(appendix)$ data--book-gen-appendix="data--book-gen-appendix"$endif$$if(final)$ data--book-gen-final="data--book-gen-final"$endif$$if(dir)$ dir="$dir$"$endif$>
 <head>
 	<meta charset="utf-8"/>
-	<title>$if(series)$$series$ – $endif$$if(title)$$title$$endif$$if(name)$: $if(appendix)$A$endif$$name$$endif$</title>
+	<title>$if(series)$$series$ – $endif$$if(title)$$title$$endif$$if(name)$: $if(chapter)$$if(noun)$$noun$ $endif$$endif$$name$$endif$</title>
 	<meta name="generator" content="pandoc"/>
 $for(author)$
 	<meta name="author" content="$author$"/>
@@ -15,6 +15,9 @@ $if(keywords)$
 $endif$
 $if(description)$
 	<meta name="description" content="$description$"/>
+$endif$
+$if(self)$
+	<link rel="canonical" href="$self$" data-external="1"/>
 $endif$
 $if(homepage)$
 	<link rel="home" href="$homepage$" data-external="1"/>
@@ -46,7 +49,7 @@ $for(header-includes)$
 $header-includes$
 $endfor$
 </head>
-<body $if(chapter)$ style="Counter-Reset: BookGen-Chapter $chapter$;$if(noun)$ --BookGen-Noun: '$noun$'$endif$"$else$$if(noun)$ style="--BookGen-Noun: '$noun$'"$endif$$endif$>
+<body style="$if(chapter)$ Counter-Reset: BookGen-Chapter $chapter$;$endif$$if(noun)$ --BookGen-Noun: '$noun$';$endif$$if(localization.draft)$ --BookGen-Draft: '$localization.draft$';$endif$">
 $for(include-before)$
 
 	<!-- BEGIN BEFORE -->
@@ -54,9 +57,11 @@ $include-before$
 	<!-- END BEFORE -->
 $endfor$
 
-	<!-- BEGIN CONTENT -->
+	<main id="BookGen.main">
+		<!-- BEGIN CONTENT -->
 $body$
-	<!-- END CONTENT -->
+		<!-- END CONTENT -->
+	</main>
 
 $for(include-after)$
 	<!-- BEGIN AFTER -->
