@@ -3,7 +3,8 @@
 <head>
 	<meta charset="utf-8"/>
 	<title>$if(series)$$series$ – $endif$$if(title)$$title$$endif$$if(name)$: $if(chapter)$$if(noun)$$noun$ $endif$$endif$$name$$endif$</title>
-	<meta name="generator" content="pandoc"/>
+	<meta name="referrer" content="same-origin"/>
+	<meta name="generator" content="$if(style)$$style$+$endif$BookGen"/>
 $for(author)$
 	<meta name="author" content="$author$"/>
 $endfor$
@@ -49,7 +50,7 @@ $for(header-includes)$
 $header-includes$
 $endfor$
 </head>
-<body style="$if(chapter)$ Counter-Reset: BookGen-Chapter $chapter$;$endif$$if(noun)$ --BookGen-Noun: '$noun$';$endif$$if(localization.draft)$ --BookGen-Draft: '$localization.draft$';$endif$">
+<body style="$if(chapter)$Counter-Reset: BookGen-Chapter $chapter$;$endif$$if(noun)$ --BookGen-Noun: '$noun$';$endif$ --BookGen-Draft: '$if(localization.draft)$$localization.draft$$else$Draft$endif$'">
 $for(include-before)$
 
 	<!-- BEGIN BEFORE -->
@@ -58,9 +59,11 @@ $include-before$
 $endfor$
 
 	<main id="BookGen.main">
+
 		<!-- BEGIN CONTENT -->
 $body$
 		<!-- END CONTENT -->
+
 	</main>
 
 $for(include-after)$
@@ -69,19 +72,14 @@ $include-after$
 	<!-- END AFTER -->
 
 $endfor$
+	<footer id="BookGen.footer">
 $if(final)$
-	<footer id="BookGen.footer">
 		<p id="BookGen.copyright">©$if(year)$ $year$$endif$$if(author)$ $author$$endif$.$if(rights)$ $rights$$endif$</p>
+$endif$
 $if(draft)$
 		<p id="BookGen.draft">$localization.draft$ $draft$.</p>
 $endif$
+		<p id="BookGen.top"><a href="#">$if(localization.top)$$localization.top$$else$Top$endif$</a></p>
 	</footer>
-$else$
-$if(draft)$
-	<footer id="BookGen.footer">
-		<p id="BookGen.draft">$localization.draft$ $draft$.</p>
-	</footer>
-$endif$
-$endif$
 </body>
 </html>
