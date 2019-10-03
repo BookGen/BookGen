@@ -194,9 +194,11 @@ The metadata provided in `info.yml` can customize the compiled result. The ava
 
 + `final` : Use this to declare that your work is finished and remove the **DRAFT** markings.
 
-+ `filter` : **Only use this if you know what you are doing !** An object with three properties, `prepare`, `action`, and `finalize`, which, if defined, must be Python code corresponding to the bodies of the `prepare`, `action`, and `finalize` components of the Panflute `run_filter()` API. The local variable `doc` will be defined in all cases, and in the case of `action` you will also have access to `elem`, which will be the current element. Set `result` to define the result of the `action` filter ( do not attempt to use `return`, it will not work ).
++ `filter` : **Only use this if you know what you are doing !** An object with three properties, `prepare`, `action`, and `finalize`, which, if defined, must be a Markdown code block of Python code corresponding to the bodies of the `prepare`, `action`, and `finalize` components of the Panflute `run_filter()` API. The local variable `doc` will be defined in all cases, and in the case of `action` you will also have access to `elem`, which will be the current element. Set `result` to define the result of the `action` filter ( do not attempt to use `return`, it will not work ).
 
 	This filter will run first, prior to any style or BookGen filters, and lets you add custom syntax transformations to your files.
+
+	If you use a raw attribute of `html` or `latex`, 
 
 + `header-includes` : Content to include in the header of every document. You can use Pandoc raw code blocks to denote the file type ( `html` or `latex` ) in which the content should be included.
 
