@@ -166,23 +166,43 @@ There are a few added features you can take advantage of in your Markdown for sp
 
 The metadata provided in `info.yml` can customize the compiled result. The available parameters are :
 
-+ `title` : The title of the work
-+ `series` : The series that the work belongs to
-+ `author` : The author of the work
-+ `publisher` : The publisher of the work
-+ `description` : A description of the work
-+ `homepage` : The homepage for the work ( as a URL )
-+ `profile` : The homepage for the author ( as a URL )
-+ `download` : A URL from which to download the work
-+ `repository` : A URL at which the source repository for the work is located
-+ `year` : The copyright year( s ) of the work
-+ `rights` : A short rights statement about the work
-+ `draft` : A short string indicating the current draft of the work ; this will be set automatically for individual texts ( but not the work as a whole ) if you have `DRAFTS` enabled
-+ `lang` : The language of the work ( for HTML )
++ `title` : The title of the work.
+
++ `series` : The series that the work belongs to.
+
++ `author` : The author of the work.
+
++ `publisher` : The publisher of the work.
+
++ `description` : A description of the work.
+
++ `homepage` : The homepage for the work ( as a URL ).
+
++ `profile` : The homepage for the author ( as a URL ).
+
++ `download` : A URL from which to download the work.
+
++ `repository` : A URL at which the source repository for the work is located.
+
++ `year` : The copyright year( s ) of the work.
+
++ `rights` : A short rights statement about the work.
+
++ `draft` : A short string indicating the current draft of the work. This will be set automatically for individual texts ( but not the work as a whole ) if you have `DRAFTS` enabled.
+
++ `lang` : The language of the work ( for HTML ).
+
 + `final` : Use this to declare that your work is finished and remove the **DRAFT** markings.
-+ `header-includes` : Content to include in the header of every document ; you should only use this to insert raw HTML headers ( LaTeX header information should be specified in your style file )
-+ `include-before` : Content to include at the beginning of every text
-+ `include-after` : Content to include at the ending of every text
+
++ `filter` : **Only use this if you know what you are doing !** An object with three properties, `prepare`, `action`, and `finalize`, which, if defined, must be Python code corresponding to the bodies of the `prepare`, `action`, and `finalize` components of the Panflute `run_filter()` API. The local variable `doc` will be defined in all cases, and in the case of `action` you will also have access to `elem`, which will be the current element. Set `result` to define the result of the `action` filter ( do not attempt to use `return`, it will not work ).
+
+	This filter will run first, prior to any style or BookGen filters, and lets you add custom syntax transformations to your files.
+
++ `header-includes` : Content to include in the header of every document. You can use Pandoc raw code blocks to denote the file type ( `html` or `latex` ) in which the content should be included.
+
++ `include-before` : Content to include at the beginning of every text.
+
++ `include-after` : Content to include at the ending of every text.
 
 Styles may define additional metadata properties. You can also provide this metadata on a per­‑text basis for additional customization.
 
