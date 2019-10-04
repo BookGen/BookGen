@@ -100,7 +100,8 @@ There are three types of source text you can create:
 + Standalone files, as all other `.md` files in the `Markdown/` directory.
 Standalone files cannot be placed in any subdirectories, and are generally treated as frontmatter.
 
-This beïng a Makefile, **you should not use colons, semicolons, or spaces in filenames**.
+This beïng a Makefile, **you should not use colons, semicolons, parentheses, or spaces in filenames**.
+ASCII special characters in general should be avoided (non-ASCII characters should be fine).
 You also should not create source files at `Markdown/Chapter/index.md` or `Markdown/text.md` without adjusting the `INDEX` or `FULLTEXT` overrides, respectively.
 Finally, style names which are the same as an existing argument defined by this makefile (`html.css`, `latex.cls`, etc.) are not supported, as they would otherwise make compiling by style ambiguous.
 
@@ -151,6 +152,17 @@ There are a few added features you can take advantage of in your Markdown for sp
 		::: continuation :::
 		(as translated by the English dub).
 		:::::::::::::::::::
+
++ A Div with a class of `plain`, which contains only one paragraph, can be used to "unwrap" the paragraph (so that no `<p>` tag is used).
+
+		::: plain :::
+		This will not use a `<p>` tag.
+		:::::::::::::
+
++ A Div or Span with `data-from-metadata` set will have its contents replaced by the corresponding metadata value, if set.
+This is especially useful for localization:
+
+		See [Chapter]{data-from-metadata="localization|type|chapter"} 02.
 
 + A Span with a class of `lettrine` can be used for leading text.
 An initial span will produce a drop cap:

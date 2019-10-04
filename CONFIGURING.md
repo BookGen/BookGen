@@ -22,11 +22,14 @@ The following basic properties are available:
 
 + `author`: The author of the work
 + `description`: A description or brief summary of the work
++ `dir`: The writing direction (for HTML)
 + `download`: A URL from which the work can be downloaded
-+ `draft`: A short string identifying the current draft of the work
++ `draft`: A short string identifying the current draft of the work; this will be automatically set on a per-chapter basis if the `DRAFTS` override is set
 + `final`: If not false(y), this is a final draft for publication; otherwise, this is a working draft
 + `homepage`: The homepage for the work
-+ `lang`: An IETF language tag providing the language of the work
++ `keywords`: A list of keywords for the work
++ `lang`: An IETF language tag providing the language of the work (for HTML)
++ `noun`: A noun ("chapter", "appendix", etc) for referring to the current division; this will be automatically set if left unspecified
 + `profile`: The homepage of the work's author
 + `publisher`: The publisher of the work
 + `repository`: The source repository for the work
@@ -35,22 +38,40 @@ The following basic properties are available:
 + `title`: The title of the work
 + `year`: The copyright year of the work
 
+These properties are set by BookGen itself and should generally not be modified:
+
++ `chapter`: The current chapter number
++ `biblio`: A relative link to the bibliography
++ `bibliography`: Bibliography data; used by `pandoc-citeproc`
++ `citation-style`: Path to a citation style for `pandoc-citeproc`; you *can* change this if you want to use a different citation style than the `chicago-note-bibliography-16th-edition` provided by BookGen
++ `first`: A relative link to the first chapter
++ `index`: A relative link to the index
++ `last`: A relative link to the last chapter
++ `next`: A relative link to the next chapter
++ `prev`: A relative link to the previous chapter
++ `self`: A relative link to the current document
++ `style`: The name of the currently-selected style
++ `styles`: An array of maps with `style` and `css` properties, giving all available styles
++ `type`: One of `appendix`, `chapter`, `standalone`
++
+
 ## Localization properties
 
 By default, BookGen templates and filters insert English text.
-You can change the text inserted (either to a different language, or just to change the phrasing) using the `localization` property.
+You can change the text inserted (either to a different language, or just to change the phrasing) using properties prefixed with `localization|`.
 The default localization is effectively as follows:
 
 ```yaml
-localization:
-  appendices: Appendices
-  appendix: Appendix
-  biblio: Bibliography
-  chapter: Chapter
-  chapters: Chapters
-  draft: Draft
-  index: Contents
-  top: Top
+localization-appendices: Appendices
+localization-chapters: Chapters
+localization-draft: Draft
+localization-index: Contents
+localization-top: Top
+localization-type-appendix: Appendix
+localization-type-biblio: Bibliography
+localization-type-chapter: Chapter
+localization-type-index: Contents
+localization-type-standalone: Preface
 ```
 
 ## Includes

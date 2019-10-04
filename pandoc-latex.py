@@ -26,19 +26,6 @@ def unindent(elem,doc):
 		result = [RawInline('\\noindent ', format='latex')] + elem.content.list
 		return Para(*result)
 
-def makelettrine(elem,doc):
-	global madelettrine
-	if madelettrine:
-		pass
-	elif isinstance(elem, Str) and len(elem.text) > 0:
-		madelettrine = True
-		return [
-			RawInline('\\lettrine{', format='latex'),
-			Str(elem.text[0]),
-			RawInline('}{', format='latex'),
-			Str(elem.text[1:])
-		]
-
 def action(elem, doc):
 	global madelettrine
 	if isinstance(elem, RawInline) and elem.format=='html':
@@ -91,7 +78,23 @@ def action(elem, doc):
 			RawBlock('\\end{quoting}', format='latex')
 		]
 	elif isinstance(elem, Div):
-		if 'chapterprecis' in elem.classes:
+		if 'data-from-metadata' in elem.attributes:
+			value = doc.get_metadata(elem.attributes.get('data-from-metadata'), builtin=False)
+			if isinstance(value, MetaString):
+				elem.content = [Plain(Str(value.text))]
+			elif isinstance(value, MetaInlines):
+				elem.content = [Plain(*value.content)]
+			elif isinstance(value, MetaBlocks):
+				elem.content = value.content
+			else:
+				value = text_content(value, doc)
+				if value:
+					elem.content = [Plain(Str(value))]
+		# Keep going…
+		if 'plain' in elem.classes:
+			if len(elem.content) == 1 and isinstance(elem.content[0], Para):
+				return Plain(*elem.content[0].content)
+		elif 'chapterprecis' in elem.classes:
 			if len(elem.content) == 1 and isinstance(elem.content[0], Para):
 				return [
 					RawBlock('\\chapterprecishere{', format='latex'),
@@ -129,15 +132,31 @@ def action(elem, doc):
 		elif 'continuation' in elem.classes:
 			unindented = False
 			elem.walk(unindent)
-			return elem
 	elif isinstance(elem, Header):
 		if elem.level == 1:
 			return Header(*elem.content, attributes=elem.attributes, classes=(elem.classes[:] if doc.get_metadata('type') == 'chapter' or doc.get_metadata('type') == 'appendix' else ['unnumbered'] + elem.classes), identifier=elem.identifier, level=1)
 	elif isinstance(elem, Span):
+		if 'data-from-metadata' in elem.attributes:
+			value = doc.get_metadata(elem.attributes.get('data-from-metadata'), builtin=False)
+			if isinstance(value, MetaString):
+				elem.content = [Str(value.text)]
+			elif isinstance(value, MetaInlines):
+				elem.content = value.content
+			else:
+				value = text_content(value, doc)
+				if value:
+					elem.content = [Str(value)]
+		# Keep going…
 		if 'lettrine' in elem.classes and len(elem.content) > 0:
 			madelettrine = False
-			elem.walk(makelettrine)
-			return elem.content.list + [RawInline('}', format='latex')]
+			if isinstance(elem.content[0], Span):
+				elem.content = [
+					RawInline('\\lettrine', format='latex'),
+					elem.content[0],
+					Span(*elem.content.list[1:])
+				]
+			else:
+				elem.content.insert(0, RawInline('\\LettrineTextFont{}', format='latex'))
 		elif 'data-colour' in elem.attributes or 'data-color' in elem.attributes:
 			colour = elem.attributes.get('data-colour', elem.attributes.get('data-color'))
 			if colour == 'RebeccaPurple':
@@ -164,5 +183,5 @@ def action(elem, doc):
 def main(doc=None):
 	return run_filter(action, doc=doc)
 
-if __name__ == "__main__":
+if __name__ == '__main__':
 	main()
