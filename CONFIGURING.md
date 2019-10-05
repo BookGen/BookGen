@@ -53,12 +53,11 @@ These properties are set by BookGen itself and should generally not be modified:
 + `style`: The name of the currently-selected style
 + `styles`: An array of maps with `style` and `css` properties, giving all available styles
 + `type`: One of `appendix`, `chapter`, `standalone`
-+
 
 ## Localization properties
 
 By default, BookGen templates and filters insert English text.
-You can change the text inserted (either to a different language, or just to change the phrasing) using properties prefixed with `localization|`.
+You can change the text inserted (either to a different language, or just to change the phrasing) using properties prefixed with `localization-`.
 The default localization is effectively as follows:
 
 ```yaml

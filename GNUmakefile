@@ -11,11 +11,13 @@
 #
 # See README.md for usage.
 
-SHELL = /bin/sh
+SHELL := /bin/sh
 srcdir := $(patsubst %/GNUmakefile,%,$(lastword $(MAKEFILE_LIST)))
 override octothorpe := \#
 override empty :=
 override space := $(empty) $(empty)
+override PYTHONPATH := $(srcdir)
+export PYTHONPATH
 
 #  DEFAULT VALUES FOR OVERRIDES  #
 

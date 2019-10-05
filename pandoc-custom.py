@@ -5,6 +5,7 @@ Pandoc custom filters.
 """
 
 from panflute import *
+from helper import *
 from importlib import import_module
 
 def prepare(doc):
