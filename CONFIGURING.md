@@ -48,6 +48,7 @@ These properties are set by BookGen itself and should generally not be modified:
 + `index`: A relative link to the index
 + `last`: A relative link to the last chapter
 + `next`: A relative link to the next chapter
++ `outputfile`: The location that the chapter will be written to
 + `prev`: A relative link to the previous chapter
 + `self`: A relative link to the current document
 + `style`: The name of the currently-selected style

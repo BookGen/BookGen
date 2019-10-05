@@ -124,6 +124,34 @@ def links(doc):
 			result.append(RawBlock('<link rel="' + rel + '" href="' + escape(href, entities={'"': '&quot;'}) + '" data-external="1"/>'))
 	return result
 
+def set_name(elem, doc):
+	if not hasattr(doc, 'name') and isinstance(elem, Header) and elem.level == 1:
+		doc.name = elem.content
+
+def append_names(elem, doc):
+	if isinstance(elem, Link) and elem.url[0] == '.':
+		output = metadata.text(doc, 'outputfile')
+		if output:
+			referenced = None
+			output = output.rsplit('/', 1)[0] # drop the filename
+			try:
+				with open('Markdown' + output[len('HTML/Archive'):] + '/' + elem.url[:-len('.xhtml#BookGen.main')] + '.md', encoding='utf-8') as f:
+					referenced = convert_text(f.read(), standalone=True)
+			except FileNotFoundError:
+				pass
+			if referenced:
+				referenced.walk(set_name, doc=referenced)
+				if hasattr(referenced, 'name'):
+					if len(elem.content) > 1:
+						elem.content.extend([
+							Str(u'\u00A0\u2013 '),
+							RawInline('<cite>', format='html')
+						] + referenced.name.list + [
+							RawInline('</cite>', format='html')
+						])
+					else:
+						elem.content = referenced.name
+
 def prepare(doc):
 	pass
 
@@ -150,7 +178,10 @@ def action(elem, doc):
 		if 'data-from-metadata' in elem.attributes:
 			elem.content = metadata.blocks(doc, elem.attributes.get('data-from-metadata'))
 		# Keep going…
-		if 'plain' in elem.classes:
+		if 'BookGen.toc' == elem.identifier:
+			elem.walk(append_names)
+			return elem.content.list
+		elif 'plain' in elem.classes:
 			if len(elem.content) == 1 and isinstance(elem.content[0], Para):
 				return Plain(*elem.content[0].content)
 	elif isinstance(elem, Span):
@@ -177,6 +208,8 @@ def finalize(doc):
 		header_includes.content.append(RawBlock('<title>' + escape(make_title(doc)) + '</title>', format='html'))
 	header_includes.content.extend(metas(doc))
 	header_includes.content.extend(links(doc))
+	if hasattr(doc, 'name'):
+		del doc.name
 
 def main(doc=None):
 	return run_filter(action, doc=doc, prepare=prepare, finalize=finalize)

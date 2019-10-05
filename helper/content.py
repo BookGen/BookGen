@@ -13,30 +13,41 @@ def _add_text(elem, doc=None, to=[]):
 		to.append('\n\n')
 
 def text(elem, doc=None):
+	mapper = partial(text, doc=doc)
 	if not elem:
 		return ''
 	result = []
 	adder = partial(_add_text, to=result)
-	elem.walk(adder)
+	if isinstance(elem, Element):
+		elem.walk(adder, doc=doc)
+	elif isinstance(elem, list):
+		result = map(mapper, elem)
+	else:
+		return str(elem)
 	return ''.join(result)
 
 def inlines(elem, doc=None):
+	mapper = partial(inlines, doc=doc)
 	if isinstance(elem, MetaBool):
 		return [Str(u'\u2B55' if elem.boolean else u'\u274C')]
 	elif isinstance(elem, MetaInlines):
 		return elem.content.list
-	elif isinstance(elem, MetaList):
+	elif isinstance(elem, MetaList) or isinstance(elem, Block) and hasattr(elem, content):
 		result = []
-		for item in map(inlines, elem.content):
+		for item in map(mapper, elem.content):
 			result += [Str(', ')] + item
 		return result[1:] # Drop unnecessary leading comma
 	elif isinstance(elem, MetaMap):
 		result = []
 		for (key, item) in elem.content.items():
-			result += [Str(', '), Str(key + ': ')] + inlines(item)
+			result += [Str(', '), Str(key + ': ')] + mapper(item)
 		return result[1:] # Drop unnecessary leading comma
 	elif isinstance(elem, MetaString):
 		return [Str(elem.text)]
+	elif isinstance(elem, Inline):
+		return [elem]
+	elif isinstance(elem, list):
+		return map(mapper, elem)
 	else:
 		result = text(elem, doc)
 		if result:
@@ -45,22 +56,27 @@ def inlines(elem, doc=None):
 			return []
 
 def blocks(elem, doc=None):
+	mapper = partial(blocks, doc=doc)
 	if isinstance(elem, MetaBlocks):
 		return elem.content.list
 	elif isinstance(elem, MetaList):
 		result = []
-		for item in map(blocks, elem.content):
+		for item in map(mapper, elem.content):
 			result.extend(item)
 		return result
 	elif isinstance(elem, MetaMap):
 		result = []
 		for key, value in elem.content.dict:
 			if isinstance(value, MetaList):
-				result.append(DefinitionItem([Str(key)], map(lambda item: Definition(*item), map(blocks, value.content))))
+				result.append(DefinitionItem([Str(key)], map(lambda item: Definition(*item), map(mapper, value.content))))
 			else:
-				item = blocks(value)
+				item = mapper(value)
 				result.append(DefinitionItem([Str(key)], [Definition(*item)]))
 		return [DefinitionList(*result)]
+	elif isinstance(elem, Block):
+		return [elem]
+	elif isinstance(elem, list):
+		return map(mapper, elem)
 	else:
 		result = inlines(elem, doc)
 		if result:
