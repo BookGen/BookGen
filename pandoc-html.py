@@ -156,7 +156,7 @@ def prepare(doc):
 
 def action(elem, doc):
 	if isinstance(elem, Header):
-		if elem.level == 1 and metadata.text(doc, 'type') in ['chapter', 'appendix']:
+		if elem.level == 1 and metadata.text(doc, 'type') not in ['chapter', 'appendix']:
 			elem.classes = ['unnumbered'] + elem.classes
 	elif isinstance(elem, LineBlock):
 		result = Para()
