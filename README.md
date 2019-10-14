@@ -84,7 +84,7 @@ In addition to GNU Make, you will need to make sure you have the following insta
 	+ ImageMagick
 		+ See <https://imagemagick.org/>
 		+ For macOS, you may want to use [Homebrew](https://brew.sh/) (`brew install imagemagick`)
-		+ Use `convert -version` to see if you already have it installed.
+		+ Use `magick -version` to see if you already have it installed.
 	+ pdftotext
 		+ A part of the Xpdf command line tools available here : <http://www.xpdfreader.com/>
 		+ For macOS, you may want to use [Homebrew](https://brew.sh/) (`brew install xpdf`)
