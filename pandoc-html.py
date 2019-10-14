@@ -74,7 +74,7 @@ def make_title(doc):
 		title += data
 	data = metadata.text(doc, 'type')
 	if data != 'standalone':
-		title += ': ' + metadata.text(doc, 'localization-type-' + data, { 'index': 'Contents', 'biblio': 'Bibliography'}.get(data, data.title()))
+		title += ': ' + metadata.text(doc, 'localization-type-' + data, {'index': 'Contents', 'biblio': 'Bibliography'}.get(data, data.title()))
 	chapter = int(metadata.text(doc, 'chapter', -1))
 	if chapter >= 0:
 		title += (' 0' if chapter < 10 else ' ') + str(chapter)
@@ -109,7 +109,7 @@ def metas(doc):
 
 def links(doc):
 	result = []
-	for name, rel in OrderedDict([
+	for name, rel in [
 		('self', 'canonical'),
 		('homepage', 'home'),
 		('index', 'contents directory index toc'),
@@ -118,7 +118,7 @@ def links(doc):
 		('next', 'next'),
 		('last', 'last'),
 		('repository', 'code-repository')
-	]).items():
+	]:
 		href = metadata.text(doc, name)
 		if href:
 			result.append(RawBlock('<link rel="' + rel + '" href="' + escape(href, entities={'"': '&quot;'}) + '" data-external="1"/>'))
@@ -191,7 +191,7 @@ def action(elem, doc):
 		if len(elem.content) == 0 and 'at' in elem.classes:
 			return []
 		elif 'data-colour' in elem.attributes or 'data-color' in elem.attributes:
-			elem.attributes = dict({ 'style': 'color: ' + elem.attributes.get('data-colour', elem.attributes.get('data-color')) }, **elem.attributes)
+			elem.attributes = dict({'style': 'color: ' + elem.attributes.get('data-colour', elem.attributes.get('data-color'))}, **elem.attributes)
 
 def finalize(doc):
 	sanitize_template_metadata(doc)
@@ -202,12 +202,13 @@ def finalize(doc):
 		header_includes = MetaBlocks(Plain(Str(header_includes.text)))
 	elif not isinstance(header_includes, MetaBlocks):
 		header_includes = MetaBlocks()
-	header_includes.walk(ignore.do)
+	header_includes.walk(ignore.do, doc)
 	header_text = content.text(header_includes)
 	if not ('<title>' in header_text):
 		header_includes.content.append(RawBlock('<title>' + escape(make_title(doc)) + '</title>', format='html'))
 	header_includes.content.extend(metas(doc))
 	header_includes.content.extend(links(doc))
+	doc.metadata['header-includes'] = header_includes
 	if hasattr(doc, 'name'):
 		del doc.name
 

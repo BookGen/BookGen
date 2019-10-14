@@ -6,70 +6,134 @@ Pandoc LaTeX filters.
 """
 
 from panflute import *
+from helper import *
+from collections import OrderedDict
 import re
 
-madelettrine = False
-unindented = False
+def sanitize_template_metadata(doc):
+	sanitize_localization(doc)
+	for name in [
+		'draft',
+		'style',
+		'type'
+	]:
+		doc.metadata[name] = metadata.text(doc, name)
+	chapter = -1
+	try:
+		chapter = int(metadata.text(doc, 'chapter'))
+	except ValueError:
+		pass
+	if chapter >= 0:
+		doc.metadata['chapter'] = str(chapter)
+	elif hasattr(doc.metadata, 'chapter'):
+		del doc.metadata.content.chapter
+	type = doc.get_metadata('type')
+	doc.metadata['noun'] = metadata.text(doc, 'noun', metadata.text(doc, 'localization-type-' + type, type.title()))
+	doc.metadata['final'] = MetaBool(bool(metadata.text(doc, 'final')))
 
-def isOneOf(elem,names):
-	for name in names:
-		if elem.text=='<'+name+'>' or elem.text.startswith('<'+name+' '):
-			return True
-	return False
+def defines(doc):
+	result = [RawInline('% Metadata %', format='latex')]
+	for name, command in [
+		('author', 'authorinfo'),
+		('description', 'descriptioninfo'),
+		('download', 'downloaduri'),
+		('draft', 'draftinfo'),
+		('homepage', 'homepageuri'),
+		('noun', 'nouninfo'),
+		('profile', 'profileuri'),
+		('publisher', 'publisherinfo'),
+		('repository', 'repositoryuri'),
+		('rights', 'rightsinfo'),
+		('series', 'seriesinfo'),
+		('style', 'styleinfo'),
+		('title', 'titleinfo'),
+		('type', 'bookgentype'),
+		('year', 'yearinfo')
+	]:
+		value = []
+		data = doc.get_metadata(name, builtin=False)
+		if isinstance(data, MetaList):
+			for item in data:
+				value.extend(content.inlines(item, doc))
+		else:
+			value.extend(content.inlines(data, doc))
+		result.extend([
+			RawInline('\n\\renewcommand{\\' + command + '}', format='latex'),
+			Span(*value)
+		])
+	data = doc.get_metadata('keywords', builtin=False)
+	value = []
+	if isinstance(data, MetaList):
+		for item in data:
+			value.extend(content.inlines(item, doc) + [Str(', ')])
+		value.pop() # The final comma is unnecessary
+	else:
+		value.extend(content.inlines(data, doc))
+	result.extend([
+		RawInline('\\renewcommand{\\keywordsinfo}', format='latex'),
+		Span(*value)
+	])
+	return result
 
-def unindent(elem,doc):
-	global unindented
-	if unindented:
+def unindent(elem, doc):
+	if doc.unindented:
 		pass
 	elif isinstance(elem, Para):
-		unindented = True
-		result = [RawInline('\\noindent ', format='latex')] + elem.content.list
-		return Para(*result)
+		elem.content.insert(0, RawInline('\\noindent{}', format='latex'))
+		doc.unindented = True
+
+def prepare(doc):
+	doc.unindented = False
 
 def action(elem, doc):
 	global madelettrine
 	if isinstance(elem, RawInline) and elem.format=='html':
-		if isOneOf(elem,['link','/link','/br','/wbr']):
-			return []
-		elif isOneOf(elem,['b']):
-			return RawInline('\\textbf{', format='latex')
-		elif isOneOf(elem,['dfn']):
-			return RawInline('\\textbf{\\textit{', format='latex')
-		elif isOneOf(elem,['cite','i']):
-			return RawInline('\\textit{', format='latex')
-		elif isOneOf(elem,['del','s']):
-			return RawInline('\\sout{', format='latex')
-		elif isOneOf(elem,['ins']):
-			return RawInline('\\uuline{', format='latex')
-		elif isOneOf(elem,['small']):
-			return RawInline('{\small{}', format='latex')
-		elif isOneOf(elem,['br','br/']):
-			return LineBreak()
-		elif isOneOf(elem,['wbr','wbr/']):
-			return RawInline('\\linebreak[0]{}', format='latex')
-		elif isOneOf(elem,['/b','/cite','/i','/del','/s','/ins','/small']):
-			return RawInline('}', format='latex')
-		elif isOneOf(elem,['/dfn']):
-			return RawInline('}}', format='latex')
-	elif isinstance(elem, RawBlock):
-		if isOneOf(elem,['meta','script','style','meta/''/meta','/script','/style']):
-			return []
-		elif isOneOf(elem,['hr']):
-			if re.match(r'^<hr +class="plain" */?>$', elem.text):
-				return RawBlock('\plainbreak{1}', format='latex')
-			return RawBlock('\\fancybreak{\\pfbreakdisplay}', format='latex')
+		match = re.match(r'<(/?)([^\s>]+)[\s>]', elem.text)
+		if match:
+			closing = match.group(1)
+			name = match.group(2)
+			textformat = {
+				'b': 'attnfont',
+				'cite': 'citefont',
+				'code': 'codefont',
+				'del': 'deletefont',
+				'dfn': 'termfont',
+				'i': 'offsetfont',
+				'ins': 'insertfont',
+				's': 'strikefont',
+				'small': 'smallfont'
+			}.get(name, None)
+			if textformat:
+				return RawInline('}', format='latex') if closing else RawInline('{\\' + textformat + '{}', format='latex')
+			elif name == 'link' or (closing and name in ['br', 'wbr']):
+				return []
+			elif name == 'br':
+				return LineBreak()
+			elif name == 'wbr':
+				return RawInline('\\linebreak[0]{}', format='latex')
+	elif isinstance(elem, RawBlock) and elem.format=='html':
+		match = re.match(r'<(/?)(\w+)[\s>]', elem.text)
+		if match:
+			closing = match.group(1)
+			name = match.group(2)
+			if name in ['link', 'meta', 'script', 'style', 'title']:
+				return []
+			elif name in ['hr', 'hr/']:
+				if re.match(r'^<hr +class="plain" */?>$', elem.text):
+					return RawBlock('\\plainbreak{1}', format='latex')
+				return RawBlock('\\fancybreak{\\pfbreakdisplay}', format='latex')
 	elif isinstance(elem, HorizontalRule):
 		return RawBlock('\\fancybreak{\\pfbreakdisplay}', format='latex')
 	elif isinstance(elem, Link):
 		if 'uri' in elem.classes:
 			return [
-				RawInline(u'\\url'),
+				RawInline('\\url', format='latex'),
 				Span(*elem.content)
 			]
 		return [
-			RawInline(u'\\href{' + elem.url.replace('%', '\\%').replace('#', '\\#') + u'}{\\dashuline', format='latex'),
+			RawInline('\\href{' + elem.url.replace('%', '\\%').replace('#', '\\#') + '}{{\\linkfont{}', format='latex'),
 			Span(*elem.content),
-			RawInline('}', format='latex')
+			RawInline('}}', format='latex')
 		]
 	elif isinstance(elem, BlockQuote):
 		return [
@@ -107,7 +171,7 @@ def action(elem, doc):
 				RawBlock('}', format='latex')
 			]
 		elif 'verse' in elem.classes:
-			result = [RawBlock('\\begin{verse}\itshape', format='latex')]
+			result = [RawBlock('\\begin{verse}\\versefont{}', format='latex')]
 			if 'alternating' in elem.classes:
 				for subelem in elem.content.list:
 					if isinstance(subelem, LineBlock):
@@ -130,11 +194,11 @@ def action(elem, doc):
 				RawBlock('\\end{snugshade}', format='latex')
 			]
 		elif 'continuation' in elem.classes:
-			unindented = False
+			doc.unindented = False
 			elem.walk(unindent)
 	elif isinstance(elem, Header):
-		if elem.level == 1:
-			return Header(*elem.content, attributes=elem.attributes, classes=(elem.classes[:] if doc.get_metadata('type') == 'chapter' or doc.get_metadata('type') == 'appendix' else ['unnumbered'] + elem.classes), identifier=elem.identifier, level=1)
+		if elem.level == 1 and metadata.text(doc, 'type') not in ['chapter', 'appendix']:
+			elem.classes.append('unnumbered')
 	elif isinstance(elem, Span):
 		if 'data-from-metadata' in elem.attributes:
 			value = doc.get_metadata(elem.attributes.get('data-from-metadata'), builtin=False)
@@ -148,7 +212,6 @@ def action(elem, doc):
 					elem.content = [Str(value)]
 		# Keep going…
 		if 'lettrine' in elem.classes and len(elem.content) > 0:
-			madelettrine = False
 			if isinstance(elem.content[0], Span):
 				elem.content = [
 					RawInline('\\lettrine', format='latex'),
@@ -175,13 +238,26 @@ def action(elem, doc):
 				return RawInline('\\vin{}', format='latex')
 	elif isinstance(elem, Strikeout):
 		return [
-			RawInline('\sout{', format='latex'),
+			RawInline('{\strikefont{}', format='latex'),
 			Span(*elem.content),
 			RawInline('}')
 		]
 
+def finalize(doc):
+	header_includes = doc.get_metadata('header-includes', MetaBlocks(), builtin=False)
+	if isinstance(header_includes, MetaInlines):
+		header_includes = MetaBlocks(Plain(*header_includes.content))
+	elif isinstance(header_includes, MetaString):
+		header_includes = MetaBlocks(Plain(Str(header_includes.text)))
+	elif not isinstance(header_includes, MetaBlocks):
+		header_includes = MetaBlocks()
+	header_includes.walk(ignore.do, doc)
+	header_includes.content.append(Plain(*defines(doc)))
+	doc.metadata['header-includes'] = header_includes
+	del doc.unindented
+
 def main(doc=None):
-	return run_filter(action, doc=doc)
+	return run_filter(action, doc=doc, prepare=prepare, finalize=finalize)
 
 if __name__ == '__main__':
 	main()

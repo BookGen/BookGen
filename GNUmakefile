@@ -279,7 +279,7 @@ $(patsubst $(FILEPREFIX)%,%,$(call alleverything,$(BUILD),cls,tex,$(INDEX))): $$
 
 $(patsubst $(FILEPREFIX)%,%,$(call allfiles,$(BUILD),cls,xxx,GO)): $(BUILD)/%/GO.xxx: $(YAML) $(srcdir)/default.yml $(srcdir)/template-index.tex $(srcdir)/pandoc-custom.py $(wildcard $(STYLES)/%.py)
 	$(makefolders)
-	(echo "---"; cat $(YAML); echo "style: $*"; echo 'outputfile: "$@"'; echo "..."; echo "---"; cat "$(srcdir)/default.yml"; echo "...") | pandoc -f markdown -t latex --standalone --template "$(srcdir)/template-index.tex" --filter "$(srcdir)/pandoc-custom.py"$(if $(wildcard $(STYLES)/$*.py), --filter $(STYLES)/$*.py,) -o $@
+	(echo "---"; cat $(YAML); echo "style: $*"; echo 'outputfile: "$@"'; echo "..."; echo "---"; cat "$(srcdir)/default.yml"; echo "...") | pandoc -f markdown -t latex --standalone --template "$(srcdir)/template-index.tex" --filter "$(srcdir)/pandoc-custom.py"$(if $(wildcard $(STYLES)/$*.py), --filter $(STYLES)/$*.py,) --filter "$(srcdir)/pandoc-latex.py" -o $@
 
 $(patsubst $(FILEPREFIX)%,%,$(call allfiles,$(BUILD),cls,aux,$(FULLTEXT))): $(BUILD)/%/$(FULLTEXT).aux: $(patsubst $(FILEPREFIX)%,%,$(call alleverything,$(BUILD),cls,tex,$(INDEX))) $(BUILD)/%/Makefile.sty $(BUILD)/%/bookgen.sty $(BUILD)/%/GO.xxx $(BUILD)/%/style.cls
 	$(makefolders)

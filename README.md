@@ -70,7 +70,7 @@ In addition to GNU Make, you will need to make sure you have the following insta
 		+ For macOS, you may want to use [Homebrew](https://brew.sh/) (`brew install imagemagick`)
 	+ `pdftotext`
 		+ A part of the Xpdf command line tools available here : <http://www.xpdfreader.com/>
-		+ Comes preinstalled on many platforms
+		+ For macOS, you may want to use [Homebrew](https://brew.sh/) (`brew install xpdf`)
 + **For zip generation:**
 	+ Zip
 		+ See <http://infozip.sourceforge.net/Zip.html>

@@ -31,25 +31,37 @@
 }\BgThispage}
 \newcommand{\pagedraftmark}{}
 \newcommand{\potentialdraftmark}{}
-\newcommand{\DraftOn}{\renewcommand{\pagedraftmark}{{\bfseries\color{red!70!white} DRAFT}}\renewcommand{\potentialdraftmark}{{\draftmark}}}
-\newcommand{\DraftOff}{\renewcommand{\pagedraftmark}{}\renewcommand{\potentialdraftmark}{}}
+\newcommand{\thecopyright}{{©~\yearinfo{} \authorinfo{}. \rightsinfo{}}}
+\newcommand{\DraftOn}{
+	\renewcommand{\pagedraftmark}{{\bfseries\color{red!70!white} DRAFT}}
+	\renewcommand{\potentialdraftmark}{{\draftmark}}
+	\renewcommand{\thecopyright}{{Unpublished draft \yearinfo{} \authorinfo. \rightsinfo{}}}
+}
+\newcommand{\DraftOff}{
+	\renewcommand{\pagedraftmark}{}
+	\renewcommand{\potentialdraftmark}{}
+	\renewcommand{\thecopyright}{{©~\yearinfo{} \authorinfo{}. \rightsinfo{}}}
+}
 \makeevenhead{simple}{\thepage}{}{\pagedraftmark}
 \makeoddhead{simple}{\pagedraftmark}{}{\thepage}
 \DraftOn
 
 % Metadata setup %
-\providecommand{\titleinfo}{A Work}
-\providecommand{\seriesinfo}{}
 \providecommand{\authorinfo}{Anonymous}
 \providecommand{\descriptioninfo}{}
-\providecommand{\homepageinfo}{}
-\providecommand{\yearinfo}{\the\year}
-\providecommand{\rightsinfo}{All rights reserved.}
-\providecommand{\styleinfo}{Standard}
+\providecommand{\downloaduri}{}
 \providecommand{\draftinfo}{\today}
-\providecommand{\publisherinfo}{Self­‑published}
-\providecommand{\thecopyright}{©~\yearinfo{} \authorinfo{}. \rightsinfo{}}
-\providecommand{\bookgenname}{}
+\providecommand{\homepageuri}{}
+\providecommand{\keywordsinfo}{}
+\providecommand{\nouninfo}{}
+\providecommand{\profileuri}{}
+\providecommand{\publisherinfo}{Self‑published}
+\providecommand{\repositoryuri}{}
+\providecommand{\rightsinfo}{All rights reserved.}
+\providecommand{\seriesinfo}{}
+\providecommand{\titleinfo}{A Work}
+\providecommand{\yearinfo}{\the\year}
+\providecommand{\styleinfo}{Standard}
 \providecommand{\bookgentype}{standalone}
 
 %%  Underline setup:  %%
@@ -62,3 +74,27 @@
 
 % Colors setup %
 \providecolor{shadecolor}{named}{Gainsboro}
+
+% Styles setup %
+\providecommand{\attnfont}{\bfseries} % <b>
+\providecommand{\citefont}{\itshape} % <cite>
+\providecommand{\codefont}{\ttfamily} % <cite>
+\providecommand{\delfont}{\markoverwith{\hbox to.35em{\hss/\hss}}\ULon} % <del>
+\providecommand{\insertfont}{\UL@setULdepth \markoverwith{\lower\ULdepth\hbox {\kern-.03em\vbox{\hrule width.2em\kern1.2\p@\hrule}\kern-.03em}}\ULon} % <ins>
+\providecommand{\linkfont}{\UL@setULdepth \markoverwith{\kern.13em \vtop{\kern\ULdepth \hrule width .3em} \kern.13em}\ULon} % <a>
+\providecommand{\offsetfont}{\itshape} % <i>
+\providecommand{\smallfont}{\small} % <del>
+\providecommand{\strikefont}{\ULdepth=-.55ex \ULset} % <del>
+\providecommand{\termfont}{\bfseries\itshape} % <dfn>
+\providecommand{\versefont}{\itshape} % <div class="verse">
+
+% Miscellaneous commands %
+\providecommand{\thecopyright}{©~\yearinfo{} \authorinfo{}. \rightsinfo{}}
+\providecommand{\makecopyright}{\clearpage\null
+\vfill
+\noindent\tiny \thecopyright\par
+\medskip
+\noindent\styleinfo{} Edition, \draftinfo{}.\par
+\vfill\clearpage}
+\providecommand{\beforefulltext}{}
+\providecommand{\afterfulltext}{}
