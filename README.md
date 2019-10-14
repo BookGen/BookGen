@@ -3,7 +3,16 @@
 BookGen is a makefile which can be used to generate a wide variety of formats from a per-chapter Markdown source.
 It is designed to ease the technical aspects of publishing electronic documents so that authors can focus on simply writing.
 
-In order to use BookGen, you will need to make or acquire `.css` and/or `.cls` styles, which will be used to format your work. Some basic styles to get you started can be found here: <https://gist.github.com/marrus-sh/77be7f563f1b7fa412113d5090190a07>.
+In order to use BookGen, you will need to make or acquire `.css` and/or `.cls` styles, which will be used to format your work.
+Some styles which are known to work with this version of BookGen are:
+
++ **[FellStyle](https://github.com/marrus-sh/FellStyle):**
+An old-fashioned layout for documents.
+Primarily aimed at PDF/print documents, but supports HTML generation as well.
+
++ **[ArchiveStyle](https://github.com/marrus-sh/ArchiveStyle):**
+HTML-only style modelled after [_Archive of Our Own_](https://archiveofourown.org/).
+
 Basic LaTeX knowledge will help in debugging PDF generation and ensuring good output, but is (hopefully) not required.
 
 BookGen uses Pandoc under-the-hood; click to read about [Pandoc's approach to markdown](https://pandoc.org/MANUAL.html#pandocs-markdown).
@@ -11,7 +20,7 @@ In contrast with normal Pandoc, BookGen does *not* perform automatic quote- or d
 
 BookGen runs on the command-line; consequently, basic understanding of how to use a terminal emulator is advised.
 
-## Installation
+## Requirements
 
 BookGen is designed for GNU Make 3.81, and will hopefully work with this and any later version.
 It will *not* work properly with earlier versions of GNU Make, or with other `make` programs.
@@ -35,10 +44,15 @@ In addition to GNU Make, you will need to make sure you have the following insta
 
 + **For general usage:**
 	+ `pandoc`
-		+ With `pandoc-citeproc` (for bibliography handling only)
-		+ See <https://pandoc.org/installing.html> for installation instructions regarding the above
+		+ This is what BookGen uses to process Markdown and generate LaTeX and HTML documents
+		+ You will need `pandoc-citeproc` if you are planning on using a bibliography
+		+ See <https://pandoc.org/installing.html> for installation instructions
+		+ Use `pandoc -v` to see if you already have it installed
 	+ Python 3, including the following packages:
 		+ `panflute` (can be installed with `pip3 install panflute`; see <http://scorreia.com/software/panflute/install.html>)
+		+ This is required for running the various filters which transform your document into their final state.
+		+ See <https://www.python.org/downloads/> for installation instructions.
+		+ Use `python3 -V` to see if you already have it installed
 + **For PDF generation:**
 	+ TeX, LaTeX, XeTeX, etc…
 		+ I use [TeXLive](http://www.tug.org/texlive/) (or, more properly, [MacTeX](http://www.tug.org/mactex/))
@@ -60,21 +74,32 @@ In addition to GNU Make, you will need to make sure you have the following insta
 				+ `biblatex-chicago` is used by default, but you can change this with a `BIBREQUIRE` override
 			+ (…and all of their prerequisites)
 			+ You will likely only need to install these yourself if you purposefully installed a limited TeX distribution like BasicTeX
+		+ Use `xelatex -v` to see if you already have it installed.
 + **For PNG generation:**
 	+ Everything required for PDF generation (PNGs are built from PDFs)
 	+ GhostScript
 		+ See <https://ghostscript.com/>
-		+ For macOS, MacTeX offers their own GhostScript package here, if you didnʼt install it as part of MacTeX: <http://www.tug.org/mactex/morepackages.html>
+		+ For macOS, MacTeX offers their own GhostScript package here, if you didn't install it as part of MacTeX: <http://www.tug.org/mactex/morepackages.html>
+		+ Use `gs -v` to see if you already have it installed.
 	+ ImageMagick
 		+ See <https://imagemagick.org/>
 		+ For macOS, you may want to use [Homebrew](https://brew.sh/) (`brew install imagemagick`)
-	+ `pdftotext`
+		+ Use `convert -version` to see if you already have it installed.
+	+ pdftotext
 		+ A part of the Xpdf command line tools available here : <http://www.xpdfreader.com/>
 		+ For macOS, you may want to use [Homebrew](https://brew.sh/) (`brew install xpdf`)
+		+ Use `pdftotext -v` to see if you already have it installed.
 + **For zip generation:**
 	+ Zip
 		+ See <http://infozip.sourceforge.net/Zip.html>
 		+ Comes preinstalled on many platforms
+		+ Use `zip -v` to see if you already have it installed.
+
+## Installation
+
+Generally speaking, you will not want to use your BookGen installation as your working directory, but rather install it somewhere else (as a subdirectory or in another location on your computer) and then call it remotely (from the command line or from another Makefile).
+
+### With Git
 
 To install, `git clone` this repository someplace you will be able to find it later, recursing submodules:
 
@@ -84,12 +109,22 @@ Or, if you already have this repository cloned, but forgot to set up the submodu
 
 	git submodule update --init
 
-(Alternatively, if you donʼt want to use `git`, download [`DeluxeMakefile/Makefile.sty`](https://gist.githubusercontent.com/marrus-sh/ce267187fff0c658c0b4b06b997e5376/raw/235e4ed3d69241aa20ee2535a2c2f36c02f794d4/Makefile.sty) and [`StoryTime/index.html`](https://gist.githubusercontent.com/marrus-sh/c3bb0a37b3a39ddf5d02403eb1641d50/raw/1f20ccc3a0c99831dc3a6102c6b87a63ae1a1deb/index.html) and place them in their respective positions in this folder.)
+You can then update BookGen to the latest version at any time with:
 
-## File Structure
+	git pull
+
+### Without Git
+
+If you don't want to use `git`, simply download and unzip this repository from GitHub.
+Then download [`DeluxeMakefile/Makefile.sty`](https://gist.githubusercontent.com/marrus-sh/ce267187fff0c658c0b4b06b997e5376/raw/235e4ed3d69241aa20ee2535a2c2f36c02f794d4/Makefile.sty) and [`StoryTime/index.html`](https://gist.githubusercontent.com/marrus-sh/c3bb0a37b3a39ddf5d02403eb1641d50/raw/1f20ccc3a0c99831dc3a6102c6b87a63ae1a1deb/index.html) and place them in their respective positions (i.e., in folders named `DeluxeMakefile` and `StoryTime`) in this directory.
+
+## Writing your book
+
+### File structure
 
 Within your project, source files are principally located in two folders: `Markdown/`, which will contain the markdown texts of the project, and `Styles/`, which will contain `.css` and `.cls` files to use when rendering your source into various formats.
 In addition to these, you will need an `info.yml` file, specifying metadata about the project as a whole.
+See [CONFIGURING.md](./CONFIGURING.md) for more on the contents of this file.
 
 There are three types of source text you can create:
 
@@ -98,11 +133,29 @@ There are three types of source text you can create:
 + Appendix files, located at `Markdown/Chapters/A$N.md`, where `$N` is a two-digit number identifying the appendix.
 
 + Standalone files, as all other `.md` files in the `Markdown/` directory.
-Standalone files cannot be placed in any subdirectories, and are generally treated as frontmatter.
+Standalone files cannot be placed in any subdirectories, and are treated as frontmatter.
+These are ordered alphabetically, but you can of course manually adjust the ordering by prefixing them with a number.
+
+A sample project (prior to running this Makefile) might look as follows:
+
+	Markdown/
+		Chapters/
+			01.md
+			02.md
+			03.md
+			04.md
+			05.md
+			A01.md
+		Foreword.md
+		Preface.md
+	Styles/
+		MyStyle.cls
+		MyStyle.css
+	info.yml
 
 This beïng a Makefile, **you should not use colons, semicolons, parentheses, or spaces in filenames**.
 ASCII special characters in general should be avoided (non-ASCII characters should be fine).
-You also should not create source files at `Markdown/Chapter/index.md` or `Markdown/text.md` without adjusting the `INDEX` or `FULLTEXT` overrides, respectively.
+You also should not create source files at `Markdown/index.md` or `Markdown/text.md` without adjusting the `INDEX` or `FULLTEXT` overrides, respectively.
 Finally, style names which are the same as an existing argument defined by this makefile (`html.css`, `latex.cls`, etc.) are not supported, as they would otherwise make compiling by style ambiguous.
 
 ### Markdown extensions
@@ -162,7 +215,7 @@ There are a few added features you can take advantage of in your Markdown for sp
 + A Div or Span with `data-from-metadata` set will have its contents replaced by the corresponding metadata value, if set.
 This is especially useful for localization:
 
-		See [Chapter]{data-from-metadata="localization|type|chapter"} 02.
+		See [Chapter]{data-from-metadata="localization-type-chapter"} 02.
 
 + A Span with a class of `lettrine` can be used for leading text.
 An initial span will produce a drop cap:
@@ -170,7 +223,7 @@ An initial span will produce a drop cap:
 		[[T]{}his is the beginning]{.lettrine} of a section of text.
 
 + A Span with a `data-colour` (or `data-color`) attribute can be used to set the text colour.
-This can be either a 6­‑digit HTML hex value or an SVG colour name.
+This can be either a 6-digit HTML hex value or an SVG colour name.
 In the latter case, the name must be properly capitalized:
 
 		Some [red]{data-colour=#FF0000} and [blue]{data-colour=MidnightBlue} text.
@@ -187,11 +240,6 @@ This is only necessary if you are generating PDFs with a style which does not us
 
 + A raw HTML block of the form `<hr class="plain"/>` represents a plain (unfancy) break.
 
-### YAML metadata
-
-The metadata provided in `info.yml` can customize the compiled result.
-See [CONFIGURING.md](./CONFIGURING.md) for more on the contents of this file.
-
 ### Bibliography
 
 You can use citations and/or a bibliography with Pandoc by specifying it via the `BIBLIOGRAPHY` override.
@@ -204,17 +252,17 @@ The [Wikibooks page on LaTeX bibliography management](https://en.wikibooks.org/w
 
 ## Usage
 
-	make [ ⟨ make-options ⟩ ] [ ⟨ args ⟩ ] [ ⟨ options ⟩ ] [ ⟨ overrides ⟩ ]
+	make [⟨make-options⟩] [⟨args⟩] [⟨options⟩] [⟨overrides⟩]
 
 If you are calling `make` from your work directory, you will want to specify the `-f` option with the path to `GNUmakefile`.
 Conversely, if you are calling `make` from this directory, you will need the `-C` option to specify the work directory in which to operate.
 
-There are two other `⟨ make-options ⟩` which are likely to be of use to you:
-`-B` will consider all targets out­‑of­‑date (and consequently remake everything), and `-s` will run `make` in “quiet mode” to avoid cluttering up your console.
+There are two other `⟨make-options⟩` which are likely to be of use to you:
+`-B` will consider all targets out-of-date (and consequently remake everything), and `-s` will run `make` in “quiet mode” to avoid cluttering up your console.
 
 ### Args and output
 
-The `⟨ args ⟩` you provide will determine which files to make.
+The `⟨args⟩` you provide will determine which files to make.
 If blank, this is the same as `all`.
 
 If you only want a specific file to be generated, you can specify its file name as an argument (for example, `HTML/$style/$file.xhtml`).
@@ -279,7 +327,7 @@ Zip files are generated in the `Zip/` directory, matching the directory structur
 
 #### Other arguments
 
-There are a few special arguments which donʼt just generate a single type of file:
+There are a few special arguments which don't just generate a single type of file:
 
 + `all` or `everything`:
 This is the same as specifying `md xhtml tex pdf png`.
@@ -299,12 +347,12 @@ Finally, you can use a specific style name (the name of a file in `Styles/`) to 
 
 ### Options
 
-`⟨ options ⟩` are a special kind of makefile override which are either true ( if set to any nonempty value ) or false ( the default ).
+`⟨options⟩` are a special kind of makefile override which are either true (if set to any nonempty value) or false (the default).
 The available options to you are as follows:
 
 + `ALLSTYLES`:
-Embed every stylesheet in every HTML document.
-This will still generate separate HTML files for each provided style, but the only difference between these files will be which stylesheet is the default.
+Embed every CSS stylesheet in every HTML document.
+Note that only the filter provided by the primary stylesheet (if applicable) will be run, so the effectiveness of this option may vary.
 
 + `NOARCHIVE`:
 Do not generate zips (unless specifically requested, e.g. with the `zip` argument).
@@ -319,7 +367,7 @@ Shows verbose output; especially useful for debugging LaTeX.
 
 ### Overrides
 
-There are a number of `⟨ overrides ⟩` which can be used to further configure the `make`.
+There are a number of `⟨overrides⟩` which can be used to further configure the `make`.
 These are:
 
 + `APPENDIXPREFIX`:
@@ -328,7 +376,7 @@ Defaults to `$(CHAPTERPREFIX)A`.
 Must not contain colons or spaces.
 
 + `BIBLIOGRAPHY`:
-The name of the workʼs bibliography file, which must have a suffix of `.bib`.
+The name of the work's bibliography file, which must have a suffix of `.bib`.
 Requires `biber` to process.
 
 + `BIBREQUIRE`:
@@ -340,7 +388,7 @@ The directory in which to place LaTeX build files.
 Defaults to `Build`.
 
 + `CHAPTERPREFIX`:
-The prefix for non­‑appendix chapters.
+The prefix for non-appendix chapters.
 Defaults to `Chapters/`.
 Must not contain colons or spaces.
 
@@ -394,10 +442,6 @@ Empty by default.
 The directory in which to find style files.
 Defaults to `Styles`.
 
-+ `TEX`:
-The LaTeX compiler to use.
-Defaults to `xelatex`.
-
 + `YAML`:
 The name of the YAML metadata file.
 Defaults to `info.yml`.
@@ -405,6 +449,19 @@ Defaults to `info.yml`.
 + `ZIP`:
 The directory in which to place Zip files.
 Defaults to `Zip`.
+
+#### Program locaitons
+
+The following `⟨overrides⟩` can be used to point to the specific programs required by BookGen:
+
++ `BIBER` (biber): `biber`
++ `CITEPROC` (pandoc-citeproc): `pandoc-citeproc`
++ `CONVERT` (ImageMagick): `magick`
++ `GS` (GhostScript): `gs`
++ `INFOZIP` (Zip): `zip`
++ `PANDOC` (Pandoc): `pandoc`
++ `PDFTOTEXT` (pdftotext): `pdftotext`
++ `TEX` ([Xe]LaTeX): `xelatex`
 
 ### Recursion and includes
 
@@ -438,7 +495,7 @@ If you save such a file as `Makefile` (or `GNUmakefile`) in your work directory,
 
 If you have other build tasks which you need to complete, a simple `include` may not work for you.
 In this case, a match-anything pattern rule can be used to achieve the same effect.
-You donʼt need to override `srcdir` with a match-anything pattern rule because it will properly be inferred through calling `make` the second time:
+You don't need to override `srcdir` with a match-anything pattern rule because it will properly be inferred through calling `make` the second time:
 
 	Makefile: ;
 	%: force
