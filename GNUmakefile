@@ -277,7 +277,7 @@ $(patsubst $(FILEPREFIX)%,%,$(call allfiles,$(BUILD),cls,cls,style)): $(BUILD)/%
 $(patsubst $(FILEPREFIX)%,%,$(call allfiles,$(BUILD),cls,bib,bibliography)): $(addsuffix .bib,$(basename $(BIBLIOGRAPHY))); $(link)
 $(patsubst $(FILEPREFIX)%,%,$(call alleverything,$(BUILD),cls,tex,$(INDEX))): $$(call unstyledfiles,$(LATEX),tex,$$(call filenames,$(BUILD),$$(call styles,$(FILEPREFIX)$$@),tex,$(FILEPREFIX)$$@)); $(link)
 
-$(patsubst $(FILEPREFIX)%,%,$(call allfiles,$(BUILD),cls,xxx,GO)): $(BUILD)/%/GO.xxx: $(YAML) $(srcdir)/default.yml $(srcdir)/template-index.tex $(srcdir)/pandoc-custom.py $(wildcard $(STYLES)/%.py)
+$(patsubst $(FILEPREFIX)%,%,$(call allfiles,$(BUILD),cls,xxx,GO)): $(BUILD)/%/GO.xxx: $(YAML) $(srcdir)/default.yml $(srcdir)/template-index.tex $(srcdir)/pandoc-custom.py $$(wildcard $(STYLES)/%.py) $(srcdir)/pandoc-latex.py
 	$(makefolders)
 	(echo "---"; cat $(YAML); echo "style: $*"; echo 'outputfile: "$@"'; echo "..."; echo "---"; cat "$(srcdir)/default.yml"; echo "...") | pandoc -f markdown -t latex --standalone --template "$(srcdir)/template-index.tex" --filter "$(srcdir)/pandoc-custom.py"$(if $(wildcard $(STYLES)/$*.py), --filter $(STYLES)/$*.py,) --filter "$(srcdir)/pandoc-latex.py" -o $@
 

@@ -31,11 +31,13 @@
 }\BgThispage}
 \newcommand{\pagedraftmark}{}
 \newcommand{\potentialdraftmark}{}
-\newcommand{\thecopyright}{{©~\yearinfo{} \authorinfo{}. \rightsinfo{}}}
+
+% Draft and Copyright %
+\newcommand{\thecopyright}{}
 \newcommand{\DraftOn}{
 	\renewcommand{\pagedraftmark}{{\bfseries\color{red!70!white} DRAFT}}
 	\renewcommand{\potentialdraftmark}{{\draftmark}}
-	\renewcommand{\thecopyright}{{Unpublished draft \yearinfo{} \authorinfo. \rightsinfo{}}}
+	\renewcommand{\thecopyright}{}
 }
 \newcommand{\DraftOff}{
 	\renewcommand{\pagedraftmark}{}
@@ -89,11 +91,9 @@
 \providecommand{\versefont}{\itshape} % <div class="verse">
 
 % Miscellaneous commands %
-\providecommand{\thecopyright}{©~\yearinfo{} \authorinfo{}. \rightsinfo{}}
 \providecommand{\makecopyright}{\clearpage\null
 \vfill
-\noindent\tiny \thecopyright\par
-\medskip
+\ifexpandsnotmt{\thecopyright}{\noindent\tiny \thecopyright\par\medskip}
 \noindent\styleinfo{} Edition, \draftinfo{}.\par
 \vfill\clearpage}
 \providecommand{\beforefulltext}{}
