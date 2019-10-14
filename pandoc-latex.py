@@ -7,7 +7,6 @@ Pandoc LaTeX filters.
 
 from panflute import *
 from helper import *
-from collections import OrderedDict
 import re
 
 def sanitize_template_metadata(doc):

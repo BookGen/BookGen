@@ -6,7 +6,6 @@ Pandoc HTML filters.
 
 from panflute import *
 from helper import *
-from collections import OrderedDict
 from xml.sax.saxutils import escape
 
 def sanitize_localization(doc):
