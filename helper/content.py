@@ -2,7 +2,9 @@ from panflute import *
 from . import ignore
 from functools import partial
 
-def _add_text(elem, doc=None, to=[]):
+def _add_text(elem, doc=None, to=None):
+	if to == None:
+		to = []
 	if ignore.should(elem, doc):
 		pass
 	elif hasattr(elem, 'text'):
@@ -31,7 +33,7 @@ def inlines(elem, doc=None):
 	if isinstance(elem, MetaBool):
 		return [Str(u'\u2B55' if elem.boolean else u'\u274C')]
 	elif isinstance(elem, MetaInlines):
-		return elem.content.list
+		return elem.content.list[:]
 	elif isinstance(elem, MetaList) or isinstance(elem, Block) and hasattr(elem, content):
 		result = []
 		for item in map(mapper, elem.content):
@@ -58,7 +60,7 @@ def inlines(elem, doc=None):
 def blocks(elem, doc=None):
 	mapper = partial(blocks, doc=doc)
 	if isinstance(elem, MetaBlocks):
-		return elem.content.list
+		return elem.content.list[:]
 	elif isinstance(elem, MetaList):
 		result = []
 		for item in map(mapper, elem.content):
