@@ -10,6 +10,9 @@ Some styles which are known to work with this version of BookGen are:
 An old-fashioned layout for documents.
 Primarily aimed at PDF/print documents, but supports HTML generation as well.
 
++ **[SerialStyle](https://github.com/marrus-sh/SerialStyle):**
+Somewhat minimal HTML and PDF styles intended for serialized works.
+
 + **[ArchiveStyle](https://github.com/marrus-sh/ArchiveStyle):**
 HTML-only style modelled after [_Archive of Our Own_](https://archiveofourown.org/).
 
