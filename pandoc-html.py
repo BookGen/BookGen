@@ -132,9 +132,9 @@ def append_names(elem, doc):
 		output = metadata.text(doc, 'outputfile')
 		if output:
 			referenced = None
-			output = output.rsplit('/', 1)[0] # drop the filename
+			output = output.rsplit('/', 1)[0].split('/', 2)[2] # drop the filename and HTML/*/
 			try:
-				with open('Markdown' + output[len('HTML/Archive'):] + '/' + elem.url[:-len('.xhtml#BookGen.main')] + '.md', encoding='utf-8') as f:
+				with open('Markdown/' + output + '/' + elem.url[:-len('.xhtml#BookGen.main')] + '.md', encoding='utf-8') as f:
 					referenced = convert_text(f.read(), standalone=True)
 			except FileNotFoundError:
 				pass
