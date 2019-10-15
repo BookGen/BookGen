@@ -31,18 +31,18 @@ def sanitize_template_metadata(doc):
 		'style',
 		'type'
 	]:
-		doc.metadata[name] = metadata.text(doc, name)
+		doc.metadata[name] = MetaString(metadata.text(doc, name))
 	chapter = -1
 	try:
 		chapter = int(metadata.text(doc, 'chapter'))
 	except ValueError:
 		pass
 	if chapter >= 0:
-		doc.metadata['chapter'] = str(chapter)
+		doc.metadata['chapter'] = MetaString(str(chapter))
 	elif hasattr(doc.metadata, 'chapter'):
 		del doc.metadata.content.chapter
-	type = doc.get_metadata('type')
-	doc.metadata['noun'] = metadata.text(doc, 'noun', metadata.text(doc, 'localization-type-' + type, type.title()))
+	type = metadata.text(doc, 'type')
+	doc.metadata['noun'] = MetaString(metadata.text(doc, 'noun', metadata.text(doc, 'localization-type-' + type, type.title())))
 	doc.metadata['final'] = MetaBool(bool(metadata.text(doc, 'final')))
 
 def defines(doc):
