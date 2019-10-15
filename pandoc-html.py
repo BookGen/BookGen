@@ -7,6 +7,7 @@ Pandoc HTML filters.
 from panflute import *
 from helper import *
 from xml.sax.saxutils import escape
+import re
 
 def sanitize_localization(doc):
 	for name in [
@@ -132,11 +133,11 @@ def append_names(elem, doc):
 		output = metadata.text(doc, 'outputfile')
 		if output:
 			referenced = None
-			output = output.rsplit('/', 1)[0].split('/', 2)[2] # drop the filename and HTML/*/
+			match = re.match(r'(.*/?)HTML/[^/]+/(.*/|)[^/]+.xhtml', output) # FILEPREFIX and any INDEX prefix
 			try:
-				with open('Markdown/' + output + '/' + elem.url[:-len('.xhtml#BookGen.main')] + '.md', encoding='utf-8') as f:
+				with open(match.group(1) + 'Markdown/' + match.group(2) + '/' + elem.url[:-len('.xhtml#BookGen.main')] + '.md', encoding='utf-8') as f:
 					referenced = convert_text(f.read(), standalone=True)
-			except FileNotFoundError:
+			except:
 				pass
 			if referenced:
 				referenced.walk(set_name, doc=referenced)
