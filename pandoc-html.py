@@ -194,16 +194,9 @@ def action(elem, doc):
 
 def finalize(doc):
 	sanitize_template_metadata(doc)
-	header_includes = doc.get_metadata('header-includes', MetaBlocks(), builtin=False)
-	if isinstance(header_includes, MetaInlines):
-		header_includes = MetaBlocks(Plain(*header_includes.content))
-	elif isinstance(header_includes, MetaString):
-		header_includes = MetaBlocks(Plain(Str(header_includes.text)))
-	elif not isinstance(header_includes, MetaBlocks):
-		header_includes = MetaBlocks()
+	header_includes = MetaBlocks(*metadata.blocks(doc, 'header-includes'))
 	header_includes.walk(ignore.do, doc)
-	header_text = content.text(header_includes)
-	if not ('<title>' in header_text):
+	if not ('<title>' in content.text(header_includes, doc)):
 		header_includes.content.append(RawBlock('<title>' + escape(make_title(doc)) + '</title>', format='html'))
 	header_includes.content.extend(metas(doc))
 	header_includes.content.extend(links(doc))

@@ -111,7 +111,7 @@ Or, if you already have this repository cloned, but forgot to set up the submodu
 
 You can then update BookGen to the latest version at any time with:
 
-	git pull
+	git pull --recurse-submodules
 
 ### Without Git
 

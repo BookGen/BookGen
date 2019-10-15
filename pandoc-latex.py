@@ -9,6 +9,21 @@ from panflute import *
 from helper import *
 import re
 
+def sanitize_localization(doc):
+	for name in [
+		'appendices',
+		'chapters',
+		'draft',
+		'index',
+		'top',
+		'type-appendix',
+		'type-biblio',
+		'type-chapter',
+		'type-index',
+		'type-standalone'
+	]:
+		doc.metadata['localization-' + name] = metadata.text(doc, 'localization-' + name)
+
 def sanitize_template_metadata(doc):
 	sanitize_localization(doc)
 	for name in [
@@ -85,7 +100,6 @@ def prepare(doc):
 	doc.unindented = False
 
 def action(elem, doc):
-	global madelettrine
 	if isinstance(elem, RawInline) and elem.format=='html':
 		match = re.match(r'<(/?)([^\s>]+)[\s>]', elem.text)
 		if match:
@@ -243,13 +257,8 @@ def action(elem, doc):
 		]
 
 def finalize(doc):
-	header_includes = doc.get_metadata('header-includes', MetaBlocks(), builtin=False)
-	if isinstance(header_includes, MetaInlines):
-		header_includes = MetaBlocks(Plain(*header_includes.content))
-	elif isinstance(header_includes, MetaString):
-		header_includes = MetaBlocks(Plain(Str(header_includes.text)))
-	elif not isinstance(header_includes, MetaBlocks):
-		header_includes = MetaBlocks()
+	sanitize_template_metadata(doc)
+	header_includes = MetaBlocks(*metadata.blocks(doc, 'header-includes'))
 	header_includes.walk(ignore.do, doc)
 	header_includes.content.append(Plain(*defines(doc)))
 	doc.metadata['header-includes'] = header_includes
