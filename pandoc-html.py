@@ -21,7 +21,7 @@ def sanitize_localization(doc):
 		'type-index',
 		'type-standalone'
 	]:
-		doc.metadata['localization-' + name] = metadata.text(doc, 'localization-' + name)
+		doc.metadata['localization-' + name] = MetaInlines(*metadata.inlines(doc, 'localization-' + name))
 
 def sanitize_styles(doc):
 	styles = doc.get_metadata('styles')
