@@ -40,14 +40,15 @@ The following basic properties are available:
 
 These properties are set by BookGen itself and should generally not be modified:
 
-+ `chapter`: The current chapter number
 + `biblio`: A relative link to the bibliography
 + `bibliography`: Bibliography data; used by `pandoc-citeproc`
 + `citation-style`: Path to a citation style for `pandoc-citeproc`; you *can* change this if you want to use a different citation style than the `chicago-note-bibliography-16th-edition` provided by BookGen
++ `filename`: The name of the file
 + `first`: A relative link to the first chapter
 + `index`: A relative link to the index
 + `last`: A relative link to the last chapter
 + `next`: A relative link to the next chapter
++ `number`: The current chapter or appendix number
 + `outputfile`: The location that the chapter will be written to
 + `prev`: A relative link to the previous chapter
 + `self`: A relative link to the current document

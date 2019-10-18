@@ -70,6 +70,11 @@ zip: ;
 
 # SOURCE FILES AND NAMES #
 
+numbers = $(sort $(foreach filename,$(patsubst $(1)%$(2),%,$(3)),$(firstword $(subst -, ,$(filename)))))
+allnumbers = $(call numbers,$(1),$(2),$(wildcard $(1)[0-9][0-9]$(2)) $(wildcard $(1)[0-9][0-9]-*$(2)))
+numbered = $(foreach number,$(call numbers,$(1),$(2),$(3)),$(firstword $(wildcard $(1)$(number)$(2)) $(wildcard $(1)$(number)-*$(2))))
+allnumbered = $(foreach number,$(call allnumbers,$(1),$(2)),$(firstword $(wildcard $(1)$(number)$(2)) $(wildcard $(1)$(number)-*$(2))))
+
 chapternames = $(patsubst $(FILEPREFIX)$(MARKDOWN)/$(CHAPTERPREFIX)%.md,%,$(1))
 appendixnames = $(patsubst $(FILEPREFIX)$(MARKDOWN)/$(APPENDIXPREFIX)%.md,%,$(1))
 standalonenames = $(patsubst $(FILEPREFIX)$(MARKDOWN)/%.md,%,$(1))
@@ -77,12 +82,12 @@ standalonenames = $(patsubst $(FILEPREFIX)$(MARKDOWN)/%.md,%,$(1))
 srcs = $(patsubst %,$(FILEPREFIX)$(MARKDOWN)/%.md,$(1))
 
 ifdef DRAFTS
-chaptersrcs := $(sort $(patsubst $(DRAFTS)/%/,$(FILEPREFIX)$(MARKDOWN)/%.md,$(dir $(wildcard $(DRAFTS)/$(CHAPTERPREFIX)[0-9][0-9]/*.md))))
-appendixsrcs := $(sort $(patsubst $(DRAFTS)/%/,$(FILEPREFIX)$(MARKDOWN)/%.md,$(dir $(wildcard $(DRAFTS)/$(APPENDIXPREFIX)[0-9][0-9]/*.md))))
+chaptersrcs := $(sort $(patsubst $(DRAFTS)/%/,$(FILEPREFIX)$(MARKDOWN)/%.md,$(dir $(call allnumbered,$(DRAFTS)/$(CHAPTERPREFIX),/*.md))))
+appendixsrcs := $(sort $(patsubst $(DRAFTS)/%/,$(FILEPREFIX)$(MARKDOWN)/%.md,$(dir $(call allnumbered,$(DRAFTS)/$(APPENDIXPREFIX),/*.md))))
 standalonesrcs := $(sort $(filter-out $(chaptersrcs) $(appendixsrcs),$(patsubst $(DRAFTS)/%/,$(FILEPREFIX)$(MARKDOWN)/%.md,$(dir $(wildcard $(DRAFTS)/*/*.md)))))
 else
-chaptersrcs := $(sort $(wildcard $(FILEPREFIX)$(MARKDOWN)/$(CHAPTERPREFIX)[0-9][0-9].md))
-appendixsrcs := $(sort $(wildcard $(FILEPREFIX)$(MARKDOWN)/$(APPENDIXPREFIX)[0-9][0-9].md))
+chaptersrcs := $(call allnumbered,$(FILEPREFIX)$(MARKDOWN)/$(CHAPTERPREFIX),.md)
+appendixsrcs := $(call allnumbered,$(FILEPREFIX)$(MARKDOWN)/$(APPENDIXPREFIX),.md)
 standalonesrcs := $(sort $(filter-out $(chaptersrcs) $(appendixsrcs),$(wildcard $(FILEPREFIX)$(MARKDOWN)/*.md)))
 endif
 allsrcs := $(standalonesrcs) $(chaptersrcs) $(appendixsrcs)
@@ -94,7 +99,10 @@ allnames := $(allstandalonenames) $(addprefix $(CHAPTERPREFIX),$(allchapternames
 
 types = $(foreach src,$(1),$(if $(findstring $(src),$(appendixsrcs)),appendix,$(if $(findstring $(src),$(chaptersrcs)),chapter,standalone)))
 localizedtypes = $(foreach src,$(1),$(LOCALIZATION_$(if $(findstring $(src),$(appendixsrcs)),APPENDIX,$(if $(findstring $(src),$(chaptersrcs)),CHAPTER,STANDALONE))))
-names = $(call $(call types,$(1))names,$(1))
+
+chapternumbers = $(call numbers,$(FILEPREFIX)$(MARKDOWN)/$(CHAPTERPREFIX),.md,$(1))
+appendixnumbers = $(call numbers,$(FILEPREFIX)$(MARKDOWN)/$(APPENDIXPREFIX),.md,$(1))
+autonumbers = $(call $(call types,$(1))numbers,$(1))
 
 # FOLDERS AND LINKS #
 
@@ -224,9 +232,9 @@ endef
 
 # We do not want to set the chapter for standalone documents.
 
-chapteryaml = $(if $(findstring $(call types,$<),chapter appendix),echo "chapter: $(call names,$<)";)
+chapteryaml = $(if $(findstring $(call types,$<),chapter appendix),echo "number: $(call autonumbers,$<)";)
 
-fileyaml = $(chapteryaml)$(if $(DRAFTS),echo "draft: $(basename $(notdir $(lastword $(sort $(wildcard $(DRAFTS)/$(call standalonenames,$<)/*.md)))))";) echo "type: $(call types,$<)";
+fileyaml = echo "filename: $(call names, $<)"; $(chapteryaml)$(if $(DRAFTS),echo "draft: $(basename $(notdir $(lastword $(sort $(wildcard $(DRAFTS)/$(call standalonenames,$<)/*.md)))))";) echo "type: $(call types,$<)";
 
 # Empty YAML if no file exists.
 $(YAML):

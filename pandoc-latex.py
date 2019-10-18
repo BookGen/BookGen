@@ -28,19 +28,20 @@ def sanitize_template_metadata(doc):
 	sanitize_localization(doc)
 	for name in [
 		'draft',
+		'filename',
 		'style',
 		'type'
 	]:
 		doc.metadata[name] = MetaString(metadata.text(doc, name))
-	chapter = -1
+	number = -1
 	try:
-		chapter = int(metadata.text(doc, 'chapter'))
+		number = int(metadata.text(doc, 'number'))
 	except ValueError:
 		pass
-	if chapter >= 0:
-		doc.metadata['chapter'] = MetaString(str(chapter))
-	elif hasattr(doc.metadata, 'chapter'):
-		del doc.metadata.content.chapter
+	if number >= 0:
+		doc.metadata['number'] = MetaString(str(number))
+	elif hasattr(doc.metadata, 'number'):
+		del doc.metadata.content.number
 	type = metadata.text(doc, 'type')
 	doc.metadata['noun'] = MetaString(metadata.text(doc, 'noun', metadata.text(doc, 'localization-type-' + type, type.title())))
 	doc.metadata['final'] = MetaBool(bool(metadata.text(doc, 'final')))

@@ -46,19 +46,20 @@ def sanitize_template_metadata(doc):
 		'lang',
 		'dir',
 		'draft',
+		'filename',
 		'style',
 		'type'
 	]:
 		doc.metadata[name] = MetaString(metadata.text(doc, name))
-	chapter = -1
+	number = -1
 	try:
-		chapter = int(metadata.text(doc, 'chapter'))
+		number = int(metadata.text(doc, 'number'))
 	except ValueError:
 		pass
-	if chapter >= 0:
-		doc.metadata['chapter'] = MetaString(str(chapter))
-	elif hasattr(doc.metadata, 'chapter'):
-		del doc.metadata.content.chapter
+	if number >= 0:
+		doc.metadata['number'] = MetaString(str(number))
+	elif hasattr(doc.metadata, 'number'):
+		del doc.metadata.content.number
 	type = metadata.text(doc, 'type')
 	doc.metadata['noun'] = MetaString(metadata.text(doc, 'noun', metadata.text(doc, 'localization-type-' + type, type.title())))
 	doc.metadata['final'] = MetaBool(bool(metadata.text(doc, 'final')))
@@ -74,10 +75,18 @@ def make_title(doc):
 		title += data
 	data = metadata.text(doc, 'type')
 	if data != 'standalone':
-		title += ': ' + metadata.text(doc, 'localization-type-' + data, {'index': 'Contents', 'biblio': 'Bibliography'}.get(data, data.title()))
-	chapter = int(metadata.text(doc, 'chapter', -1))
-	if chapter >= 0:
-		title += (' 0' if chapter < 10 else ' ') + str(chapter)
+		if title:
+			title += ': '
+		title += metadata.text(doc, 'localization-type-' + data, {'index': 'Contents', 'biblio': 'Bibliography'}.get(data, data.title()))
+	number = int(metadata.text(doc, 'number', -1))
+	if number >= 0:
+		title += (' 0' if number < 10 else ' ') + str(number)
+	if data not in ['index', 'biblio']:
+		match = re.match(r'[0-9][0-9]-(.*)', metadata.text(doc, 'filename'))
+		if match:
+			if title:
+				title += u'\u00A0\u2013 '
+			title += match.group(1).replace('_', ' ').title()
 	return title
 
 def metas(doc):
@@ -131,6 +140,7 @@ def set_name(elem, doc):
 def append_names(elem, doc):
 	if isinstance(elem, Link) and elem.url[0] == '.':
 		output = metadata.text(doc, 'outputfile')
+		name = None
 		if output:
 			referenced = None
 			match = re.match(r'(.*/?)HTML/[^/]+/(.*/|)[^/]+.xhtml', output) # FILEPREFIX and any INDEX prefix
@@ -142,15 +152,21 @@ def append_names(elem, doc):
 			if referenced:
 				referenced.walk(set_name, doc=referenced)
 				if hasattr(referenced, 'name'):
-					if len(elem.content) > 1:
-						elem.content.extend([
-							Str(u'\u00A0\u2013 '),
-							RawInline('<cite>', format='html')
-						] + referenced.name.list + [
-							RawInline('</cite>', format='html')
-						])
-					else:
-						elem.content = referenced.name
+					name = referenced.name
+				else:
+					match = re.search(r'[0-9][0-9]-([^/]+).md$', output)
+					if match:
+						name = Plain(Str(match.group(1)))
+			if name:
+				if len(elem.content) > 1:
+					elem.content.extend([
+						Str(u'\u00A0\u2013 '),
+						RawInline('<cite>', format='html')
+					] + referenced.name.list + [
+						RawInline('</cite>', format='html')
+					])
+				else:
+					elem.content = referenced.name
 
 def prepare(doc):
 	pass
