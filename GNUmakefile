@@ -99,6 +99,7 @@ allnames := $(allstandalonenames) $(addprefix $(CHAPTERPREFIX),$(allchapternames
 
 types = $(foreach src,$(1),$(if $(findstring $(src),$(appendixsrcs)),appendix,$(if $(findstring $(src),$(chaptersrcs)),chapter,standalone)))
 localizedtypes = $(foreach src,$(1),$(LOCALIZATION_$(if $(findstring $(src),$(appendixsrcs)),APPENDIX,$(if $(findstring $(src),$(chaptersrcs)),CHAPTER,STANDALONE))))
+names = $(call $(call types,$(1))names,$(1))
 
 chapternumbers = $(call numbers,$(FILEPREFIX)$(MARKDOWN)/$(CHAPTERPREFIX),.md,$(1))
 appendixnumbers = $(call numbers,$(FILEPREFIX)$(MARKDOWN)/$(APPENDIXPREFIX),.md,$(1))
