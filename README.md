@@ -132,8 +132,10 @@ See [CONFIGURING.md](./CONFIGURING.md) for more on the contents of this file.
 There are three types of source text you can create:
 
 + Chapter files, located at `Markdown/Chapters/$N.md`, where `$N` is a two-digit number identifying the chapter, optionally followed by a hyphen and some text.
+**Do not use ASCII spaces!!**
 
 + Appendix files, located at `Markdown/Chapters/A$N.md`, where `$N` is a two-digit number identifying the appendix, optionally followed by a hyphen and some text.
+**Do not use ASCII spaces!!**
 
 + Standalone files, as all other `.md` files in the `Markdown/` directory.
 Standalone files cannot be placed in any subdirectories, and are treated as frontmatter.
