@@ -20,7 +20,7 @@ def prepare(doc):
 		fn = getattr(filters, name, None)
 		codes = doc.get_metadata('filter.' + name, builtin=False)
 		if callable(fn) or codes:
-			setattr(doc, '_BookGen__' + name, fn if callable(fn) else compile('\n'.join([
+			setattr(doc, '_BookGen__custom_' + name, fn if callable(fn) else compile('\n'.join([
 				x.text for x in (
 					codes.content if isinstance(codes, MetaBlocks) else [codes]
 				) if (
