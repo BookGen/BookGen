@@ -38,9 +38,9 @@ def prepare(doc):
 
 def action(elem, doc):
 	if hasattr(doc, '_BookGen__custom_action'):
-		result = None
-		exec(doc._BookGen__custom_action)
-		return result
+		passed = {'doc': doc, 'elem': elem, 'result': None}
+		exec(doc._BookGen__custom_action, globals(), passed)
+		return passed['result']
 
 def finalize(doc):
 	if hasattr(doc, '_BookGen__custom_finalize'):
