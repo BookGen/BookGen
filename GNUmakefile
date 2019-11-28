@@ -70,7 +70,7 @@ zip: ;
 
 # SOURCE FILES AND NAMES #
 
-numbers = $(sort $(foreach filename,$(patsubst $(1)%$(2),%,$(3)),$(firstword $(subst -, ,$(filename)))))
+numbers = $(sort $(foreach filename,$(if $(findstring /,$(2)),$(patsubst $(1)%$(dir $(2)),%,$(dir $(3))),$(patsubst $(1)%$(2),%,$(3))),$(firstword $(subst -, ,$(filename)))))
 allnumbers = $(call numbers,$(1),$(2),$(wildcard $(1)[0-9][0-9]$(2)) $(wildcard $(1)[0-9][0-9]-*$(2)))
 numbered = $(foreach number,$(call numbers,$(1),$(2),$(3)),$(firstword $(wildcard $(1)$(number)$(2)) $(wildcard $(1)$(number)-*$(2))))
 allnumbered = $(foreach number,$(call allnumbers,$(1),$(2)),$(firstword $(wildcard $(1)$(number)$(2)) $(wildcard $(1)$(number)-*$(2))))
