@@ -68,7 +68,7 @@ def blocks(elem, doc=None):
 		return result
 	elif isinstance(elem, MetaMap):
 		result = []
-		for key, value in elem.content.dict:
+		for key, value in elem.content.items():
 			if isinstance(value, MetaList):
 				result.append(DefinitionItem([Str(key)], map(lambda item: Definition(*item), map(mapper, value.content))))
 			else:
