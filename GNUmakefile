@@ -82,23 +82,23 @@ standalonenames = $(patsubst $(FILEPREFIX)$(MARKDOWN)/%.md,%,$(1))
 srcs = $(patsubst %,$(FILEPREFIX)$(MARKDOWN)/%.md,$(1))
 
 ifdef DRAFTS
-chaptersrcs := $(sort $(patsubst $(DRAFTS)/%/,$(FILEPREFIX)$(MARKDOWN)/%.md,$(dir $(call allnumbered,$(DRAFTS)/$(CHAPTERPREFIX),/*.md))))
-appendixsrcs := $(sort $(patsubst $(DRAFTS)/%/,$(FILEPREFIX)$(MARKDOWN)/%.md,$(dir $(call allnumbered,$(DRAFTS)/$(APPENDIXPREFIX),/*.md))))
-standalonesrcs := $(sort $(filter-out $(chaptersrcs) $(appendixsrcs),$(patsubst $(DRAFTS)/%/,$(FILEPREFIX)$(MARKDOWN)/%.md,$(dir $(wildcard $(DRAFTS)/*/*.md)))))
+allchaptersrcs := $(sort $(patsubst $(DRAFTS)/%/,$(FILEPREFIX)$(MARKDOWN)/%.md,$(dir $(call allnumbered,$(DRAFTS)/$(CHAPTERPREFIX),/*.md))))
+allappendixsrcs := $(sort $(patsubst $(DRAFTS)/%/,$(FILEPREFIX)$(MARKDOWN)/%.md,$(dir $(call allnumbered,$(DRAFTS)/$(APPENDIXPREFIX),/*.md))))
+allstandalonesrcs := $(sort $(filter-out $(allchaptersrcs) $(allappendixsrcs),$(patsubst $(DRAFTS)/%/,$(FILEPREFIX)$(MARKDOWN)/%.md,$(dir $(wildcard $(DRAFTS)/*/*.md)))))
 else
-chaptersrcs := $(call allnumbered,$(FILEPREFIX)$(MARKDOWN)/$(CHAPTERPREFIX),.md)
-appendixsrcs := $(call allnumbered,$(FILEPREFIX)$(MARKDOWN)/$(APPENDIXPREFIX),.md)
-standalonesrcs := $(sort $(filter-out $(chaptersrcs) $(appendixsrcs),$(wildcard $(FILEPREFIX)$(MARKDOWN)/*.md)))
+allchaptersrcs := $(call allnumbered,$(FILEPREFIX)$(MARKDOWN)/$(CHAPTERPREFIX),.md)
+allappendixsrcs := $(call allnumbered,$(FILEPREFIX)$(MARKDOWN)/$(APPENDIXPREFIX),.md)
+allstandalonesrcs := $(sort $(filter-out $(allchaptersrcs) $(allappendixsrcs),$(wildcard $(FILEPREFIX)$(MARKDOWN)/*.md)))
 endif
-allsrcs := $(standalonesrcs) $(chaptersrcs) $(appendixsrcs)
+allsrcs := $(allstandalonesrcs) $(allchaptersrcs) $(allappendixsrcs)
 
-allstandalonenames := $(call standalonenames,$(standalonesrcs))
-allchapternames := $(call chapternames,$(chaptersrcs))
-allappendixnames := $(call appendixnames,$(appendixsrcs))
+allstandalonenames := $(call standalonenames,$(allstandalonesrcs))
+allchapternames := $(call chapternames,$(allchaptersrcs))
+allappendixnames := $(call appendixnames,$(allappendixsrcs))
 allnames := $(allstandalonenames) $(addprefix $(CHAPTERPREFIX),$(allchapternames)) $(addprefix $(APPENDIXPREFIX),$(allappendixnames))
 
-types = $(foreach src,$(1),$(if $(findstring $(src),$(appendixsrcs)),appendix,$(if $(findstring $(src),$(chaptersrcs)),chapter,standalone)))
-localizedtypes = $(foreach src,$(1),$(LOCALIZATION_$(if $(findstring $(src),$(appendixsrcs)),APPENDIX,$(if $(findstring $(src),$(chaptersrcs)),CHAPTER,STANDALONE))))
+types = $(foreach src,$(1),$(if $(findstring $(src),$(allappendixsrcs)),appendix,$(if $(findstring $(src),$(allchaptersrcs)),chapter,standalone)))
+localizedtypes = $(foreach src,$(1),$(LOCALIZATION_$(if $(findstring $(src),$(allappendixsrcs)),APPENDIX,$(if $(findstring $(src),$(allchaptersrcs)),CHAPTER,STANDALONE))))
 names = $(call $(call types,$(1))names,$(1))
 
 chapternumbers = $(call numbers,$(FILEPREFIX)$(MARKDOWN)/$(CHAPTERPREFIX),.md,$(1))
