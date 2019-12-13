@@ -62,7 +62,8 @@ def sanitize_template_metadata(doc):
 		del doc.metadata.content.number
 	type = metadata.text(doc, 'type')
 	doc.metadata['noun'] = MetaString(metadata.text(doc, 'noun', metadata.text(doc, 'localization-type-' + type, type.title())))
-	doc.metadata['final'] = MetaBool(bool(metadata.text(doc, 'final')))
+	final = doc.get_metadata('final', builtin=False)
+	doc.metadata['final'] = MetaBool(bool(final.boolean if isinstance(final, MetaBool) else content.text(final, doc)))
 	sanitize_styles(doc)
 
 def make_title(doc):
