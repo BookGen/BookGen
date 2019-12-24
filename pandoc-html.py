@@ -144,7 +144,7 @@ def append_names(elem, doc):
 		name = None
 		if output:
 			referenced = None
-			match = re.match(r'(.*/?)HTML/[^/]+/(.*/|)[^/]+.xhtml', output) # FILEPREFIX and any INDEX prefix
+			match = re.match(r'(.*/?)HTML/[^/]+/(.*/|)[^/]+\.xhtml', output) # FILEPREFIX and any INDEX prefix
 			try:
 				with open(match.group(1) + 'Markdown/' + match.group(2) + '/' + elem.url[:-len('.xhtml#BookGen.main')] + '.md', encoding='utf-8') as f:
 					referenced = convert_text(f.read(), standalone=True)
