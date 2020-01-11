@@ -46,7 +46,7 @@ If your version of make is out-of-date (or nonexistent), you can download a new 
 In addition to GNU Make, you will need to make sure you have the following installed on your computer:
 
 + **For general usage:**
-	+ `pandoc`
+	+ `pandoc` (version 2.8 or higher)
 		+ This is what BookGen uses to process Markdown and generate LaTeX and HTML documents
 		+ You will need `pandoc-citeproc` if you are planning on using a bibliography
 		+ See <https://pandoc.org/installing.html> for installation instructions
