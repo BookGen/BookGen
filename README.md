@@ -288,6 +288,12 @@ LaTeX files are generated with a `.tex` extension in the `LaTeX/` directory.
 These are *not* complete files (they do not have a `\begin{document}`), but rather are intended to be `\include`d into other documents.
 This process happens automatically when you use this makefile to generate a PDF.
 
+#### LaTeX.HS
+
+Arguments: `tex.hs`
+
+Native AST files for debugging LaTeX generation.
+
 #### LaTeX.JSON
 
 Arguments: `tex.json`
@@ -306,6 +312,12 @@ Note that currently only Firefox actually provides a mechanism for toggling betw
 
 Each generated file is a standalone (X)HTML file (embedded CSS) with an `.xhtml` extension.
 A table of contents file will also be generated; see the `INDEX` override for the name of this file.
+
+#### HTML.HS
+
+Arguments: `xhtml.hs`
+
+Native AST files for debugging HTML generation.
 
 #### HTML.JSON
 
@@ -352,6 +364,9 @@ This is the same as specifying `md xhtml tex pdf png`.
 + `clean`:
 Removes the build directory and temporary build files.
 
++ `hs` or `native`:
+This is the same as specifying `xhtml.hs tex.hs`.
+
 + `json`:
 This is the same as specifying `xhtml.json tex.json`.
 
@@ -373,9 +388,6 @@ The available options to you are as follows:
 + `ALLSTYLES`:
 Embed every CSS stylesheet in every HTML document.
 Note that only the filter provided by the primary stylesheet (if applicable) will be run, so the effectiveness of this option may vary.
-
-+ `DEBUG`:
-Create JSON files alongside normal ones for debugging purposes.
 
 + `NOARCHIVE`:
 Do not generate zips (unless specifically requested, e.g. with the `zip` argument).
