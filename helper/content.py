@@ -9,10 +9,12 @@ def _add_text(elem, doc=None, to=None):
 		pass
 	elif hasattr(elem, 'text'):
 		to.append(elem.text)
-	elif isinstance(elem, (Space, LineBreak, SoftBreak)):
+	elif isinstance(elem, (Space, SoftBreak)):
 		to.append(' ')
-	elif isinstance(elem, Para):
+	elif isinstance(elem, Block) and not isinstance(elem, Div):
 		to.append('\n\n')
+	elif isinstance(elem, (LineBreak, LineItem, ListItem)):
+		to.append('\n')
 
 def text(elem, doc=None):
 	mapper = partial(text, doc=doc)
@@ -31,7 +33,7 @@ def text(elem, doc=None):
 def inlines(elem, doc=None):
 	mapper = partial(inlines, doc=doc)
 	if isinstance(elem, MetaBool):
-		return [Str(u'\u2B55' if elem.boolean else u'\u274C')]
+		return [Str('\u2B55' if elem.boolean else '\u274C')]
 	elif isinstance(elem, MetaInlines):
 		return elem.content.list[:]
 	elif isinstance(elem, MetaList) or isinstance(elem, Block) and hasattr(elem, content):

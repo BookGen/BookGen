@@ -70,7 +70,7 @@ def make_title(doc):
 	title = ''
 	data = metadata.text(doc, 'series')
 	if data:
-		title += data + u' \u2013 '
+		title += data + ' \u2013 '
 	data = metadata.text(doc, 'title')
 	if data:
 		title += data
@@ -86,7 +86,7 @@ def make_title(doc):
 		match = re.match(r'[0-9][0-9]-(.*)', metadata.text(doc, 'filename'))
 		if match:
 			if title:
-				title += u'\u00A0\u2013 '
+				title += '\u00A0\u2013 '
 			title += match.group(1).replace('_', ' ').title()
 	return title
 
@@ -161,7 +161,7 @@ def append_names(elem, doc):
 			if name:
 				if len(elem.content) > 1:
 					elem.content.extend([
-						Str(u'\u00A0\u2013 '),
+						Str('\u00A0\u2013 '),
 						RawInline('<cite>', format='html')
 					] + referenced.name.list + [
 						RawInline('</cite>', format='html')
