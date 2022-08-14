@@ -7,18 +7,18 @@ It is designed to ease the technical aspects of publishing electronic
 
 In order to use BookGen, you will need to make or acquire `.css` and/or
   `.cls` styles, which will be used to format your work.
-Some styles which are known to work with this version of BookGen
-  are :—
+Some styles which are known to work with this version (0.9.0) of
+  BookGen are :—
 
- +  **[FellStyle](https://github.com/BookGen/FellStyle):**
+ +  **[FellStyle](https://github.com/BookGen/FellStyle/):**
     An oldfashioned layout for documents.
     Primarily aimed at PDF/print documents, but supports HTML
       generation as well.
 
- +  **[SerialStyle](https://github.com/marrus-sh/SerialStyle):**
+ +  **[SerialStyle](https://github.com/BookGen/SerialStyle):**
     Somewhat minimal HTML and PDF styles intended for serialized works.
 
- +  **[ArchiveStyle](https://github.com/marrus-sh/ArchiveStyle):**
+ +  **[ArchiveStyle](https://github.com/BookGen/ArchiveStyle):**
     HTML‐only style modelled after [<cite>Archive of Our
       Own</cite>](https://archiveofourown.org/).
 
@@ -86,25 +86,6 @@ In addition to GNU Make, you will need to make sure you have the
     + I use [TeXLive](http://www.tug.org/texlive/) (or, more properly,
         [MacTeX](http://www.tug.org/mactex/))
     + `xelatex` is the recommended LaTeX command, and the default
-    + You will need at least the following LaTeX packages :—
-      + `memoir`
-      + `url`
-      + `hyperref`
-      + `logreq`
-      + `ncctools`
-      + `ulem`
-      + `xcolor`
-      + `ifetex`
-      + `everypage`
-      + `background`
-      + `newunicodechar`
-      + `mfirstuc`
-      + `biblatex`, including `biber` (for works with bibliographies)
-        + `biblatex-chicago` is used by default, but you can change
-            this with a `BIBREQUIRE` override
-      + (…and all of their prerequisites)
-      + You will likely only need to install these yourself if you
-          purposefully installed a limited TeX distribution like BasicTeX
     + Use `xelatex -v` to see if you already have it installed
 + **For PNG generation :—**
   + Everything required for PDF generation (PNGs are built from PDFs)

@@ -15,9 +15,11 @@
 \newunicodechar{‐}{\Hyphdash}
 \newunicodechar{‑}{\Hyphdash*}
 \newunicodechar{ }{~}
-\newunicodechar{ }{\thinspace}
+\newunicodechar{ }{\,}
 \newunicodechar{ }{\enspace}
 \newunicodechar{ }{\quad}
+\newunicodechar{⸺}{\makebox[2em][s]{\textemdash\hss\textemdash\hss\textemdash}}
+\newunicodechar{⸻}{\makebox[3em][s]{\textemdash\hss\textemdash\hss\textemdash\hss\textemdash}}
 
 % Draft mark %
 \providecommand{\draftmark}{\backgroundsetup{
@@ -80,13 +82,13 @@
 % Styles setup %
 \providecommand{\attnfont}{\bfseries} % <b>
 \providecommand{\citefont}{\itshape} % <cite>
-\providecommand{\codefont}{\ttfamily} % <cite>
+\providecommand{\codefont}{\ttfamily} % <code>
 \providecommand{\delfont}{\markoverwith{\hbox to.35em{\hss/\hss}}\ULon} % <del>
 \providecommand{\insertfont}{\UL@setULdepth \markoverwith{\lower\ULdepth\hbox {\kern-.03em\vbox{\hrule width.2em\kern1.2\p@\hrule}\kern-.03em}}\ULon} % <ins>
 \providecommand{\linkfont}{\UL@setULdepth \markoverwith{\kern.13em \vtop{\kern\ULdepth \hrule width .3em} \kern.13em}\ULon} % <a>
 \providecommand{\offsetfont}{\itshape} % <i>
-\providecommand{\smallfont}{\small} % <del>
-\providecommand{\strikefont}{\ULdepth=-.55ex \ULset} % <del>
+\providecommand{\smallfont}{\small} % <small>
+\providecommand{\strikefont}{\ULdepth=-.55ex \ULset} % <s>
 \providecommand{\termfont}{\bfseries\itshape} % <dfn>
 \providecommand{\versefont}{\itshape} % <div class="verse">
 
