@@ -1,0 +1,45 @@
+% From ltfiles.dtx
+
+% Copyright (c) 1999 2002-2008 LaTeX3 Project
+% With slight modifications by Margaret KIBI (2016)
+%
+% This work may be distributed and/or modified under the conditions of
+% the LaTeX Project Public License, either version 1.3 of this license
+% or (at your option) any later version. The latest version of this
+% license is in <http://www.latex-project.org/lppl.txt> and version
+% 1.3 or later is part of all distributions of LaTeX version
+% 2005/12/01 or later.
+%
+% This work consists of the file Makefile.sty, which is a modified
+% excerpt of ltfiles.dtx, included with all LaTeX distributions.
+
+\def\include#1 {%
+    \clearpage
+    \if@filesw
+        \immediate\write\@mainaux{\string\@input{#1.aux}}%
+    \fi
+    \@tempswatrue
+    \if@partsw
+        \@tempswafalse
+        \edef\reserved@b{#1}%
+        \@for\reserved@a:=\@partlist\do
+            {\ifx\reserved@a\reserved@b\@tempswatrue\fi}%
+    \fi
+    \if@tempswa
+        \let\@auxout\@partaux
+        \if@filesw
+            \immediate\openout\@partaux #1.aux
+            \immediate\write\@partaux{\relax}%
+        \fi
+        \@writeckpt{#1@pre}% %  <- Added 2016 by Margaret KIBI
+        \@input@{#1.tex}%
+        \clearpage
+        \@writeckpt{#1}%
+        \if@filesw
+            \immediate\closeout\@partaux
+        \fi
+    \else
+        \deadcycles\z@
+        \@nameuse{cp@#1}%
+    \fi
+    \let\@auxout\@mainaux}

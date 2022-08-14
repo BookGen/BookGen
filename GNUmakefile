@@ -1,13 +1,13 @@
-# BOOKGEN #
-# <https://github.com/marrus-sh/BookGen/>
+# BookGen ∷ GNUMakefile
+# =====================================================================
 #
-# I canʼt imagine why you would want to TOUCH this code, but just in case :
+# <https://github.com/marrus-sh/BookGen/>.
 #
-# This program is free software : you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or ( at your option ) any later version.
+# Copyright © 2019–2020, 2022 Margaret KIBI.
 #
-# This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
-#
-# You should have received a copy of the GNU General Public License along with this program. If not, see <https://www.gnu.org/licenses/>.
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this
+# file, You can obtain one at <https://mozilla.org/MPL/2.0/>.
 #
 # See README.md for usage.
 
@@ -357,7 +357,7 @@ buildtext = cd $(BUILD)/$(call styles,$@) && $(TEX) --jobname=$(call filenames,P
 
 buildfulltext = cd $(BUILD)/$* && $(TEX) --jobname=$(FULLTEXT) $(if $(VERBOSE),,--interaction=batchmode --halt-on-error) --file-line-error "\documentclass{style}\usepackage{Makefile}\usepackage{bookgen}$(if $(BIBLIOGRAPHY),\usepackage$(BIBREQUIRE)\addbibresource{bibliography.bib}\nocite{*},)\input{GO.xxx}\input{$(INDEX)}\afterfulltext\end{document}"
 
-$(patsubst $(FILEPREFIX)%,%,$(call allfiles,$(BUILD),cls,sty,Makefile)): $(srcdir)/DeluxeMakefile/Makefile.sty; $(link)
+$(patsubst $(FILEPREFIX)%,%,$(call allfiles,$(BUILD),cls,sty,Makefile)): $(srcdir)/Makefile.sty; $(link)
 $(patsubst $(FILEPREFIX)%,%,$(call allfiles,$(BUILD),cls,sty,bookgen)): $(srcdir)/bookgen.sty; $(link)
 $(patsubst $(FILEPREFIX)%,%,$(call allfiles,$(BUILD),cls,cls,style)): $(BUILD)/%/style.cls: $(STYLES)/%.cls; $(link)
 $(patsubst $(FILEPREFIX)%,%,$(call allfiles,$(BUILD),cls,bib,bibliography)): $(addsuffix .bib,$(basename $(BIBLIOGRAPHY))); $(link)
@@ -394,9 +394,9 @@ $(call allfiles,$(PDF),cls,pdf,$(FULLTEXT)): $(FILEPREFIX)$(PDF)/%/$(FULLTEXT).p
 
 $(eval $(call targets,$(PNG),cls,png/index.html,$(FULLTEXT)))
 
-$(call alleverything,$(PNG),cls,png/index.html,$(FULLTEXT)): $(FILEPREFIX)$(PNG)/%/index.html: $(FILEPREFIX)$(PDF)/%.pdf $(srcdir)/StoryTime/index.html
+$(call alleverything,$(PNG),cls,png/index.html,$(FULLTEXT)): $(FILEPREFIX)$(PNG)/%/index.html: $(FILEPREFIX)$(PDF)/%.pdf $(srcdir)/storytime.html
 	$(makefolders)
-	cp "$(srcdir)/StoryTime/index.html" $@
+	cp "$(srcdir)/storytime.html" $@
 	echo "<TITLE>$(call standalonenames,$*) PNGs</TITLE>" >> $@
 	$(CONVERT) -density 144 $< -quality 100 -colorspace RGB -alpha remove $(dir $@)Page_%d.png; ((( m=0 )); for page in $(dir $@)/*.png; do echo; echo Page_$$m.png | tr '\n' ' '; (( m++ )); $(PDFTOTEXT) -f $$m -l $$m -enc UTF-8 -eol unix -nopgbrk -raw $< - | awk '{gsub(/-\n/, ""); print}' | tr '\n' ' ' | tr -s ' '; done; echo) >> $@
 	@echo $(if $(findstring $(FILEPREFIX)$(PNG)/$(call styles,$@)/$(FULLTEXT)/index.html,$@),"$(call styles,$@) fulltext PNGs generated at $(dir $@)","$(call styles,$@) PNGs for $(call srcs,$(call filenames,$(PNG),$(call styles,$@),/index.html,$@)) generated at $(dir $@)")
